@@ -3,6 +3,7 @@ package io.jenkins.plugins.sample;
 import com.google.gson.Gson;
 import hudson.util.Secret;
 import io.jenkins.plugins.sample.model.TestResults;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
@@ -22,7 +23,8 @@ public class HttpHelper {
                 .returnResponse();
 
         if (response.getStatusLine().getStatusCode() != 200) {
-            throw new HttpException("Sending test results failed with response " + response.getStatusLine().getStatusCode());
+            throw new HttpException(String.format(Messages.SendTestResultsNotificationPostBuildTask_errors_postFailed(),
+                    response.getStatusLine().getStatusCode(), IOUtils.toString(response.getEntity().getContent())));
         }
     }
 }

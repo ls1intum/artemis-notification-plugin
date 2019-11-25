@@ -117,7 +117,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         @Nonnull
         @Override
         public String getDisplayName() {
-            return "Send Test Results Notification";
+            return Messages.SendTestResultsNotificationPostBuildTask_DescriptorImpl_DisyplayName();
         }
 
         public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item, @QueryParameter String credentialsId) {
