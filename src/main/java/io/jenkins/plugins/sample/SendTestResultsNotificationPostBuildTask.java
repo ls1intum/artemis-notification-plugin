@@ -16,6 +16,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import io.jenkins.plugins.sample.model.TestResults;
 import io.jenkins.plugins.sample.model.Testsuite;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
@@ -29,12 +30,12 @@ import javax.annotation.Nonnull;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
@@ -50,22 +51,37 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         taskListener.getLogger().println("SUCCESS Send RESULTS");
         taskListener.getLogger().println(credentialsId);
 
-        try {
-            final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            final DocumentBuilder builder = factory.newDocumentBuilder();
-            final FilePath resultsDir = filePath.child("results");
-            final List<FilePath> reports = resultsDir.list().stream()
-                    .filter(path -> path.getName().endsWith(".xml"))
-                    .collect(Collectors.toList());;
+        final FilePath resultsDir = filePath.child("results");
+        final List<Testsuite> reports = resultsDir.list().stream()
+                .filter(path -> path.getName().endsWith(".xml"))
+                .map(report -> {
+                    try {
+                        final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
+                        final Unmarshaller unmarshaller = context.createUnmarshaller();
+                        return (Testsuite) unmarshaller.unmarshal(report.read());
+                    } catch (JAXBException | IOException | InterruptedException e) {
+                        taskListener.error(e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
 
-            for (FilePath report : reports) {
-                final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
-                final Unmarshaller unmarshaller = context.createUnmarshaller();
-                final Testsuite suite = (Testsuite) unmarshaller.unmarshal(report.read());
+        final TestResults results = new TestResults();
+        results.setResults(reports);
+        results.setCommitHashes(findCommitHashes(run, 150));
+    }
+
+    private List<String> findCommitHashes(Run<?, ?> run, int limit) throws IOException {
+        final List<String> hashes = new LinkedList<>();
+        final Pattern checkoutPattern = Pattern.compile("(.*git checkout -f )([0-9a-z]+)(.*)");
+        for (final String line : run.getLog(limit)) {
+            final Matcher matcher = checkoutPattern.matcher(line);
+            if (matcher.matches()) {
+                hashes.add(matcher.group(2));
             }
-        } catch (ParserConfigurationException | JAXBException e) {
-            taskListener.error(e.getMessage(), e);
         }
+
+        return hashes;
     }
 
     public String getCredentialsId() {
