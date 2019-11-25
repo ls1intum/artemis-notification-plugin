@@ -16,6 +16,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import io.jenkins.plugins.sample.model.Testsuite;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
@@ -25,6 +26,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -55,9 +59,11 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                     .collect(Collectors.toList());;
 
             for (FilePath report : reports) {
-                taskListener.getLogger().println(report.getName());
+                final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
+                final Unmarshaller unmarshaller = context.createUnmarshaller();
+                final Testsuite suite = (Testsuite) unmarshaller.unmarshal(report.read());
             }
-        } catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException | JAXBException e) {
             taskListener.error(e.getMessage(), e);
         }
     }

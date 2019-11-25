@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-    TODO
+    Send JUnit test result notifications to a REST API
 </div>
