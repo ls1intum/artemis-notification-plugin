@@ -1,41 +1,41 @@
 package io.jenkins.plugins.sample.model;
 
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
+
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
+@ExportedBean(defaultVisibility = 3)
 @XmlRootElement(name = "testcase")
-public class Testcase {
+public class TestCase {
+    @XmlAttribute
     private String name;
+    @XmlAttribute
     private String classname;
+    @XmlAttribute
     private double time;
     private List<Failure> failures;
     private List<Error> errors;
 
+    @Exported
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    @Exported
     public String getClassname() {
         return classname;
     }
 
-    public void setClassname(String classname) {
-        this.classname = classname;
-    }
-
+    @Exported
     public double getTime() {
         return time;
     }
 
-    public void setTime(double time) {
-        this.time = time;
-    }
-
+    @Exported
     public List<Failure> getFailures() {
         return failures;
     }
@@ -45,6 +45,7 @@ public class Testcase {
         this.failures = failures;
     }
 
+    @Exported
     public List<Error> getErrors() {
         return errors;
     }

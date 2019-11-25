@@ -69,6 +69,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final TestResults results = new TestResults();
         results.setResults(reports);
         results.setCommitHashes(findCommitHashes(run, 150));
+        run.addAction(results);
     }
 
     private List<String> findCommitHashes(Run<?, ?> run, int limit) throws IOException {
