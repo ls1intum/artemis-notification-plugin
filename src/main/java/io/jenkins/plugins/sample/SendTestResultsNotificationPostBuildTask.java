@@ -10,6 +10,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Item;
 import hudson.model.Run;
 import hudson.model.TaskListener;
+import hudson.plugins.git.util.BuildData;
 import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Publisher;
@@ -32,10 +33,8 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
@@ -68,21 +67,16 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
 
         final TestResults results = new TestResults();
         results.setResults(reports);
-        results.setCommitHashes(findCommitHashes(run, 150));
+        results.setCommitHashes(findCommitHashes(run));
         run.addAction(results);
     }
 
-    private List<String> findCommitHashes(Run<?, ?> run, int limit) throws IOException {
-        final List<String> hashes = new LinkedList<>();
-        final Pattern checkoutPattern = Pattern.compile("(.*git checkout -f )([0-9a-z]+)(.*)");
-        for (final String line : run.getLog(limit)) {
-            final Matcher matcher = checkoutPattern.matcher(line);
-            if (matcher.matches()) {
-                hashes.add(matcher.group(2));
-            }
-        }
-
-        return hashes;
+    private List<String> findCommitHashes(Run<?, ?> run) {
+        return run.getActions(BuildData.class).stream()
+                .map(BuildData::getLastBuiltRevision)
+                .filter(Objects::nonNull)
+                .map(revision -> revision.getSha1().name())
+                .collect(Collectors.toList());
     }
 
     public String getCredentialsId() {
