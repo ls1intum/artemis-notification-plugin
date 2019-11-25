@@ -17,11 +17,13 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import hudson.util.Secret;
 import io.jenkins.plugins.sample.model.TestResults;
 import io.jenkins.plugins.sample.model.Testsuite;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpException;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -39,36 +41,53 @@ import java.util.stream.Collectors;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
     private String credentialsId;
+    private String notificationUrl;
 
     @DataBoundConstructor
-    public SendTestResultsNotificationPostBuildTask(String credentialsId) {
+    public SendTestResultsNotificationPostBuildTask(String credentialsId, String notificationUrl) {
         this.credentialsId = credentialsId;
+        this.notificationUrl = notificationUrl;
     }
 
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
-        taskListener.getLogger().println("SUCCESS Send RESULTS");
-        taskListener.getLogger().println(credentialsId);
-
         final FilePath resultsDir = filePath.child("results");
-        final List<Testsuite> reports = resultsDir.list().stream()
-                .filter(path -> path.getName().endsWith(".xml"))
-                .map(report -> {
-                    try {
-                        final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
-                        final Unmarshaller unmarshaller = context.createUnmarshaller();
-                        return (Testsuite) unmarshaller.unmarshal(report.read());
-                    } catch (JAXBException | IOException | InterruptedException e) {
-                        taskListener.error(e.getMessage(), e);
-                        throw new RuntimeException(e);
-                    }
-                })
-                .collect(Collectors.toList());
+        final List<Testsuite> reports = extractTestResults(taskListener, resultsDir);
+        final TestResults results = rememberTestResults(run, reports);
+        final Secret secret = Objects.requireNonNull(CredentialsProvider
+                .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList()))
+                .getSecret();
 
+        // Post results to notification URL
+        try {
+            HttpHelper.postTestResults(results, notificationUrl, secret);
+        } catch (HttpException e) {
+            taskListener.error(e.getMessage(), e);
+        }
+    }
+
+    private List<Testsuite> extractTestResults(@Nonnull TaskListener taskListener, FilePath resultsDir) throws IOException, InterruptedException {
+        return resultsDir.list().stream()
+                    .filter(path -> path.getName().endsWith(".xml"))
+                    .map(report -> {
+                        try {
+                            final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
+                            final Unmarshaller unmarshaller = context.createUnmarshaller();
+                            return (Testsuite) unmarshaller.unmarshal(report.read());
+                        } catch (JAXBException | IOException | InterruptedException e) {
+                            taskListener.error(e.getMessage(), e);
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .collect(Collectors.toList());
+    }
+
+    private TestResults rememberTestResults(@Nonnull Run<?, ?> run, List<Testsuite> reports) {
         final TestResults results = new TestResults();
         results.setResults(reports);
         results.setCommitHashes(findCommitHashes(run));
         run.addAction(results);
+        return results;
     }
 
     private List<String> findCommitHashes(Run<?, ?> run) {
