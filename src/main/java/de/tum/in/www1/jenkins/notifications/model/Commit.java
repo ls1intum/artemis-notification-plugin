@@ -3,10 +3,7 @@ package de.tum.in.www1.jenkins.notifications.model;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 @ExportedBean(defaultVisibility = 2)
-@XmlRootElement(name = "testsuite")
 public class Commit {
     private String hash;
     private String repositorySlug;
