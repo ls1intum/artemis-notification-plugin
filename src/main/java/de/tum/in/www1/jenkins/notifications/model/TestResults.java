@@ -13,6 +13,10 @@ import java.util.List;
 @ExportedBean
 public class TestResults implements Action {
     private String fullName;
+    private int successful;
+    private int skipped;
+    private int errors;
+    private int failures;
     private List<Commit> commits;
     private List<Testsuite> results;
     private String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE);
@@ -24,6 +28,42 @@ public class TestResults implements Action {
     @Exported
     public String getRunDate() {
         return runDate;
+    }
+
+    @Exported
+    public int getSuccessful() {
+        return successful;
+    }
+
+    public void setSuccessful(int successful) {
+        this.successful = successful;
+    }
+
+    @Exported
+    public int getSkipped() {
+        return skipped;
+    }
+
+    public void setSkipped(int skipped) {
+        this.skipped = skipped;
+    }
+
+    @Exported
+    public int getErrors() {
+        return errors;
+    }
+
+    public void setErrors(int errors) {
+        this.errors = errors;
+    }
+
+    @Exported
+    public int getFailures() {
+        return failures;
+    }
+
+    public void setFailures(int failures) {
+        this.failures = failures;
     }
 
     @Exported

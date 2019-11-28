@@ -84,10 +84,25 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
     }
 
     private TestResults rememberTestResults(@Nonnull Run<?, ?> run, List<Testsuite> reports) {
+        int skipped = 0;
+        int failed = 0;
+        int successful = 0;
+        int errors = 0;
+        for (final Testsuite suite : reports) {
+            successful += suite.getTests() - (suite.getErrors() + suite.getFailures() + suite.getSkipped());
+            failed += suite.getFailures();
+            errors += suite.getErrors();
+            skipped += suite.getSkipped();
+        }
+
         final TestResults results = new TestResults();
         results.setResults(reports);
         results.setCommits(findCommits(run));
         results.setFullName(run.getFullDisplayName());
+        results.setErrors(errors);
+        results.setSkipped(skipped);
+        results.setSuccessful(successful);
+        results.setFailures(failed);
         run.addAction(results);
         return results;
     }
