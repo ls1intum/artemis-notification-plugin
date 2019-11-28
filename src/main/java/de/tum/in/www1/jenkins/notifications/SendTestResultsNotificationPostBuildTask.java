@@ -3,6 +3,7 @@ package de.tum.in.www1.jenkins.notifications;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import de.tum.in.www1.jenkins.notifications.model.Commit;
 import de.tum.in.www1.jenkins.notifications.model.TestResults;
 import hudson.Extension;
 import hudson.FilePath;
@@ -85,17 +86,24 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
     private TestResults rememberTestResults(@Nonnull Run<?, ?> run, List<Testsuite> reports) {
         final TestResults results = new TestResults();
         results.setResults(reports);
-        results.setCommitHashes(findCommitHashes(run));
+        results.setCommits(findCommits(run));
         results.setFullName(run.getFullDisplayName());
         run.addAction(results);
         return results;
     }
 
-    private List<String> findCommitHashes(Run<?, ?> run) {
+    private List<Commit> findCommits(Run<?, ?> run) {
         return run.getActions(BuildData.class).stream()
-                .map(BuildData::getLastBuiltRevision)
-                .filter(Objects::nonNull)
-                .map(revision -> revision.getSha1().name())
+                .map(buildData -> {
+                    final String[] urlString = buildData.getRemoteUrls().iterator().next().split("/");
+                    final String slug = urlString[urlString.length - 1].split("\\.")[0];
+                    final String hash = Objects.requireNonNull(buildData.getLastBuiltRevision()).getSha1().name();
+                    final Commit commit = new Commit();
+                    commit.setRepositorySlug(slug);
+                    commit.setHash(hash);
+
+                    return commit;
+                })
                 .collect(Collectors.toList());
     }
 

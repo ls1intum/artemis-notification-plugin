@@ -11,7 +11,7 @@ import java.util.List;
 @ExportedBean
 public class TestResults implements Action {
     private String fullName;
-    private List<String> commitHashes;
+    private List<Commit> commits;
     private List<Testsuite> results;
 
     public Api getApi() {
@@ -28,12 +28,12 @@ public class TestResults implements Action {
     }
 
     @Exported
-    public List<String> getCommitHashes() {
-        return commitHashes;
+    public List<Commit> getCommits() {
+        return commits;
     }
 
-    public void setCommitHashes(List<String> commitHashes) {
-        this.commitHashes = commitHashes;
+    public void setCommits(List<Commit> commits) {
+        this.commits = commits;
     }
 
     @Exported
