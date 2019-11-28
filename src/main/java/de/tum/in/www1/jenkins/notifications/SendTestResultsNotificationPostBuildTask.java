@@ -1,8 +1,9 @@
-package io.jenkins.plugins.sample;
+package de.tum.in.www1.jenkins.notifications;
 
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import de.tum.in.www1.jenkins.notifications.model.TestResults;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -18,8 +19,7 @@ import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
-import io.jenkins.plugins.sample.model.TestResults;
-import io.jenkins.plugins.sample.model.Testsuite;
+import de.tum.in.www1.jenkins.notifications.model.Testsuite;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.lang.StringUtils;
@@ -86,6 +86,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final TestResults results = new TestResults();
         results.setResults(reports);
         results.setCommitHashes(findCommitHashes(run));
+        results.setFullName(run.getFullDisplayName());
         run.addAction(results);
         return results;
     }

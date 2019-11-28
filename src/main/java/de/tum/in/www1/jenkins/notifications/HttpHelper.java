@@ -1,8 +1,8 @@
-package io.jenkins.plugins.sample;
+package de.tum.in.www1.jenkins.notifications;
 
 import com.google.gson.Gson;
 import hudson.util.Secret;
-import io.jenkins.plugins.sample.model.TestResults;
+import de.tum.in.www1.jenkins.notifications.model.TestResults;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;

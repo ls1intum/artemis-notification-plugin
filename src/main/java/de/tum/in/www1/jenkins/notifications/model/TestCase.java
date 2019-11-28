@@ -1,4 +1,4 @@
-package io.jenkins.plugins.sample.model;
+package de.tum.in.www1.jenkins.notifications.model;
 
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;

@@ -1,4 +1,4 @@
-package io.jenkins.plugins.sample.model;
+package de.tum.in.www1.jenkins.notifications.model;
 
 import hudson.model.Action;
 import hudson.model.Api;
@@ -10,11 +10,21 @@ import java.util.List;
 
 @ExportedBean
 public class TestResults implements Action {
+    private String fullName;
     private List<String> commitHashes;
     private List<Testsuite> results;
 
     public Api getApi() {
         return new Api(this);
+    }
+
+    @Exported
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     @Exported
