@@ -19,7 +19,7 @@ public class TestResults implements Action {
     private int failures;
     private List<Commit> commits;
     private List<Testsuite> results;
-    private String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE);
+    private String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
     public Api getApi() {
         return new Api(this);
