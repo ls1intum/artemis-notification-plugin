@@ -6,6 +6,8 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.CheckForNull;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @ExportedBean
@@ -13,9 +15,15 @@ public class TestResults implements Action {
     private String fullName;
     private List<Commit> commits;
     private List<Testsuite> results;
+    private String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE);
 
     public Api getApi() {
         return new Api(this);
+    }
+
+    @Exported
+    public String getRunDate() {
+        return runDate;
     }
 
     @Exported
