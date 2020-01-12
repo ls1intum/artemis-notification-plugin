@@ -130,6 +130,14 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         this.credentialsId = credentialsId;
     }
 
+    public String getNotificationUrl() {
+        return notificationUrl;
+    }
+
+    public void setNotificationUrl(String notificationUrl) {
+        this.notificationUrl = notificationUrl;
+    }
+
     @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
