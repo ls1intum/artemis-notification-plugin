@@ -1,0 +1,4 @@
+<?jelly escape-by-default='true'?>
+<div>
+    Send JUnit test result notifications to a REST API
+</div>
