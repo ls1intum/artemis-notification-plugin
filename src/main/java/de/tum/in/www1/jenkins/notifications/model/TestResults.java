@@ -1,5 +1,6 @@
 package de.tum.in.www1.jenkins.notifications.model;
 
+import de.tum.in.ase.parser.domain.Report;
 import hudson.model.Action;
 import hudson.model.Api;
 import org.kohsuke.stapler.export.Exported;
@@ -19,6 +20,7 @@ public class TestResults implements Action {
     private int failures;
     private List<Commit> commits;
     private List<Testsuite> results;
+    private List<Report> staticCodeAnalysisResults;
     private String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
     public Api getApi() {
@@ -91,6 +93,15 @@ public class TestResults implements Action {
 
     public void setResults(List<Testsuite> results) {
         this.results = results;
+    }
+
+    @Exported
+    public List<Report> getStaticCodeAnalysisResults() {
+        return staticCodeAnalysisResults;
+    }
+
+    public void setStaticCodeAnalysisResults(List<Report> staticCodeAnalysisResults) {
+        this.staticCodeAnalysisResults = staticCodeAnalysisResults;
     }
 
     @CheckForNull
