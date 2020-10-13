@@ -9,18 +9,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@ExportedBean(defaultVisibility = 2)
-@XmlRootElement(name = "staticCodeAnalysisResults")
 public class StaticCodeAnalysisResults {
 
     private List<Report> reports;
 
-    @Exported
     public List<Report> getFailures() {
         return reports;
     }
 
-    @XmlElement(name = "report")
     public void setFailures(List<Failure> failures) {
         this.reports = reports;
     }
