@@ -20,7 +20,7 @@ public class TestResults implements Action {
     private int failures;
     private List<Commit> commits;
     private List<Testsuite> results;
-    private List<Report> staticCodeAnalysisResults;
+    private List<Report> staticCodeAnalysisReports;
     private String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
     public Api getApi() {
@@ -96,12 +96,12 @@ public class TestResults implements Action {
     }
 
     @Exported
-    public List<Report> getStaticCodeAnalysisResults() {
-        return staticCodeAnalysisResults;
+    public List<Report> getStaticCodeAnalysisReports() {
+        return staticCodeAnalysisReports;
     }
 
-    public void setStaticCodeAnalysisResults(List<Report> staticCodeAnalysisResults) {
-        this.staticCodeAnalysisResults = staticCodeAnalysisResults;
+    public void setStaticCodeAnalysisReports(List<Report> staticCodeAnalysisReports) {
+        this.staticCodeAnalysisReports = staticCodeAnalysisReports;
     }
 
     @CheckForNull

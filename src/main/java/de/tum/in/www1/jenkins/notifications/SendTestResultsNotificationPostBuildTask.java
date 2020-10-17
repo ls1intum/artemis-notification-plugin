@@ -3,7 +3,9 @@ package de.tum.in.www1.jenkins.notifications;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
+import de.tum.in.ase.parser.exception.ParserException;
 import de.tum.in.www1.jenkins.notifications.model.Commit;
 import de.tum.in.www1.jenkins.notifications.model.TestResults;
 import hudson.Extension;
@@ -36,6 +38,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -43,7 +46,7 @@ import java.util.stream.Collectors;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
     private static final String TEST_RESULTS_PATH = "results";
-    private static final String STATIC_CODE_ANALYSIS_RESULTS_PATH = "staticCodeAnalysisResults";
+    private static final String STATIC_CODE_ANALYSIS_RESULTS_PATH = "staticCodeAnalysisReports";
 
     private String credentialsId;
     private String notificationUrl;
@@ -59,8 +62,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final FilePath testResultsDir = filePath.child(TEST_RESULTS_PATH);
         final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_RESULTS_PATH);
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
-        // final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports();
-        final TestResults results = rememberTestResults(run, testReports);
+        final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
+        final TestResults results = rememberTestResults(run, testReports, staticCodeAnalysisReport);
         final Secret secret = Objects.requireNonNull(CredentialsProvider
                 .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList()))
                 .getSecret();
@@ -89,12 +92,12 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                     .collect(Collectors.toList());
     }
 
-    private TestResults rememberTestResults(@Nonnull Run<?, ?> run, List<Testsuite> reports) {
+    private TestResults rememberTestResults(@Nonnull Run<?, ?> run, List<Testsuite> testReports, List<Report> staticCodeAnalysisReports) {
         int skipped = 0;
         int failed = 0;
         int successful = 0;
         int errors = 0;
-        for (final Testsuite suite : reports) {
+        for (final Testsuite suite : testReports) {
             successful += suite.getTests() - (suite.getErrors() + suite.getFailures() + suite.getSkipped());
             failed += suite.getFailures();
             errors += suite.getErrors();
@@ -102,7 +105,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         }
 
         final TestResults results = new TestResults();
-        results.setResults(reports);
+        results.setResults(testReports);
+        results.setStaticCodeAnalysisReports(staticCodeAnalysisReports);
         results.setCommits(findCommits(run));
         results.setFullName(run.getFullDisplayName());
         results.setErrors(errors);
@@ -126,6 +130,26 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                     return commit;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private List<Report> parseStaticCodeAnalysisReports(TaskListener taskListener, FilePath staticCodeAnalysisResultDir) {
+        // Static code analysis parsing must not crash the sending of notifications under any circumstances
+        try {
+            List<Report> reports = new ArrayList<>();
+            ReportParser reportParser = new ReportParser();
+            for (FilePath filePath : staticCodeAnalysisResultDir.list()) {
+                if (!filePath.getName().endsWith(".xml")) {
+                    continue;
+                }
+                Report report = reportParser.transformToReport(filePath.read());
+                reports.add(report);
+            }
+            return reports;
+        }
+        catch (Exception e) {
+            taskListener.error(e.getMessage(), e);
+            return new ArrayList<>();
+        }
     }
 
     public String getCredentialsId() {
