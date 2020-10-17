@@ -141,8 +141,15 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                 if (!filePath.getName().endsWith(".xml")) {
                     continue;
                 }
-                Report report = reportParser.transformToReport(filePath.read());
-                reports.add(report);
+
+                // Try to parse each report separately. Failure parsing one report should not effect the parsing of others
+                try {
+                    Report report = reportParser.transformToReport(filePath.read());
+                    reports.add(report);
+                }
+                catch (ParserException | IOException | InterruptedException e) {
+                    taskListener.error(e.getMessage(), e);
+                }
             }
             return reports;
         }
