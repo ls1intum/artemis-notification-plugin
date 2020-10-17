@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
     private static final String TEST_RESULTS_PATH = "results";
-    private static final String STATIC_CODE_ANALYSIS_RESULTS_PATH = "staticCodeAnalysisReports";
+    private static final String STATIC_CODE_ANALYSIS_REPORTS_PATH = "staticCodeAnalysisReports";
 
     private String credentialsId;
     private String notificationUrl;
@@ -60,7 +60,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
     @Override
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
         final FilePath testResultsDir = filePath.child(TEST_RESULTS_PATH);
-        final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_RESULTS_PATH);
+        final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_REPORTS_PATH);
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
         final TestResults results = rememberTestResults(run, testReports, staticCodeAnalysisReport);
