@@ -29,6 +29,7 @@ import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
 import de.tum.in.ase.parser.exception.ParserException;
+import de.tum.in.www1.jenkins.notifications.exception.TestParsingException;
 import de.tum.in.www1.jenkins.notifications.model.Commit;
 import de.tum.in.www1.jenkins.notifications.model.TestResults;
 import de.tum.in.www1.jenkins.notifications.model.Testsuite;
@@ -97,7 +98,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                     }
                     catch (JAXBException | IOException | InterruptedException e) {
                         taskListener.error(e.getMessage(), e);
-                        throw new RuntimeException(e);
+                        throw new TestParsingException(e);
                     }
                 })
                 .collect(Collectors.toList());
