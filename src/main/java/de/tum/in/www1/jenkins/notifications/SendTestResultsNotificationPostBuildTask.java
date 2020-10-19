@@ -1,13 +1,38 @@
 package de.tum.in.www1.jenkins.notifications;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import jenkins.model.Jenkins;
+import jenkins.tasks.SimpleBuildStep;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpException;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+
 import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
 import de.tum.in.ase.parser.exception.ParserException;
 import de.tum.in.www1.jenkins.notifications.model.Commit;
 import de.tum.in.www1.jenkins.notifications.model.TestResults;
+import de.tum.in.www1.jenkins.notifications.model.Testsuite;
+
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -23,32 +48,15 @@ import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
-import de.tum.in.www1.jenkins.notifications.model.Testsuite;
-import jenkins.model.Jenkins;
-import jenkins.tasks.SimpleBuildStep;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpException;
-import org.jenkinsci.plugins.plaincredentials.StringCredentials;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-
-import javax.annotation.Nonnull;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
+
     private static final String TEST_RESULTS_PATH = "results";
+
     private static final String STATIC_CODE_ANALYSIS_REPORTS_PATH = "staticCodeAnalysisReports";
 
     private String credentialsId;
+
     private String notificationUrl;
 
     @DataBoundConstructor
@@ -58,7 +66,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
     }
 
     @Override
-    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener) throws InterruptedException, IOException {
+    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener)
+            throws InterruptedException, IOException {
         final FilePath testResultsDir = filePath.child(TEST_RESULTS_PATH);
         final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_REPORTS_PATH);
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
@@ -71,25 +80,27 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         // Post results to notification URL
         try {
             HttpHelper.postTestResults(results, notificationUrl, secret);
-        } catch (HttpException e) {
+        }
+        catch (HttpException e) {
             taskListener.error(e.getMessage(), e);
         }
     }
 
     private List<Testsuite> extractTestResults(@Nonnull TaskListener taskListener, FilePath resultsDir) throws IOException, InterruptedException {
         return resultsDir.list().stream()
-                    .filter(path -> path.getName().endsWith(".xml"))
-                    .map(report -> {
-                        try {
-                            final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
-                            final Unmarshaller unmarshaller = context.createUnmarshaller();
-                            return (Testsuite) unmarshaller.unmarshal(report.read());
-                        } catch (JAXBException | IOException | InterruptedException e) {
-                            taskListener.error(e.getMessage(), e);
-                            throw new RuntimeException(e);
-                        }
-                    })
-                    .collect(Collectors.toList());
+                .filter(path -> path.getName().endsWith(".xml"))
+                .map(report -> {
+                    try {
+                        final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
+                        final Unmarshaller unmarshaller = context.createUnmarshaller();
+                        return (Testsuite) unmarshaller.unmarshal(report.read());
+                    }
+                    catch (JAXBException | IOException | InterruptedException e) {
+                        taskListener.error(e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     private TestResults rememberTestResults(@Nonnull Run<?, ?> run, List<Testsuite> testReports, List<Report> staticCodeAnalysisReports) {
@@ -195,7 +206,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                 if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     return result.includeCurrentValue(credentialsId);
                 }
-            } else {
+            }
+            else {
                 if (!item.hasPermission(Item.EXTENDED_READ)
                         && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
                     return result.includeCurrentValue(credentialsId);
@@ -211,7 +223,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                 if (!Jenkins.get().hasPermission(Jenkins.ADMINISTER)) {
                     return FormValidation.ok();
                 }
-            } else {
+            }
+            else {
                 if (!item.hasPermission(Item.EXTENDED_READ)
                         && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
                     return FormValidation.ok();
