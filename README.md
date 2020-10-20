@@ -8,6 +8,9 @@ The plugin will collect and merge **all** JUnit formatted test results in the _r
 So, you have to copy or generate all JUnit XML files under this directory, the plugin will take care of merging
 multiple files and posting the results to the specified endpoint.
 
+Additionally, the plugin will parse and send reports created by static code analysis. The tools Spotbugs, Checkstyle and PMD are currently supported.
+The plugin only considers XML reports in the directory _staticCodeAnalysisReports_.
+
 ## Activate for a build
 1. Under _Add post-build-action_ choose "Send Test Results Notification"
 2. Input any URL to post a notification to as the _Notification Target_
@@ -132,6 +135,54 @@ Email: krusche[at]in[dot]tum[dot]de
       "tests": 1,
       "time": 0.078
     }
+  ],
+  "staticCodeAnalysisReports":[
+     {
+        "tool":"SPOTBUGS",
+        "issues":[
+           {
+               "filePath":"/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
+               "startLine":16,
+               "endLine":16,
+               "rule":"ES_COMPARING_PARAMETER_STRING_WITH_EQ",
+               "category":"BAD_PRACTICE",
+               "message":"Comparison of String parameter using == or != in com.stefan.staticCodeAnalysis.App.equalString(String)",
+               "priority":"1"
+           }
+        ]
+     },
+     {
+        "tool":"CHECKSTYLE",
+        "issues":[
+           {
+               "filePath":"/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
+               "startLine":7,
+               "endLine":7,
+               "startColumn":1,
+               "endColumn":1,
+               "rule":"HideUtilityClassConstructorCheck",
+               "category":"design",
+               "message":"Utility classes should not have a public or default constructor.",
+               "priority":"error"
+           }
+        ]
+     },
+     {
+        "tool":"PMD",
+        "issues":[
+           {
+               "filePath":"/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
+               "startLine":10,
+               "endLine":10,
+               "startColumn":16,
+               "endColumn":16,
+               "rule":"UnusedLocalVariable",
+               "category":"Best Practices",
+               "message":"Avoid unused local variables such as 'b'.",
+               "priority":"3"
+           }
+        ]
+     }
   ],
   "runDate": "2020-02-19T14:42:42.084Z[Etc/UTC]",
   "skipped": 0,

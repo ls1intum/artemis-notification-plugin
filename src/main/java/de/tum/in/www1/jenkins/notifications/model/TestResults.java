@@ -1,24 +1,38 @@
 package de.tum.in.www1.jenkins.notifications.model;
 
-import hudson.model.Action;
-import hudson.model.Api;
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
-
-import javax.annotation.CheckForNull;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import javax.annotation.CheckForNull;
+
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
+
+import de.tum.in.ase.parser.domain.Report;
+
+import hudson.model.Action;
+import hudson.model.Api;
+
 @ExportedBean
 public class TestResults implements Action {
+
     private String fullName;
+
     private int successful;
+
     private int skipped;
+
     private int errors;
+
     private int failures;
+
     private List<Commit> commits;
+
     private List<Testsuite> results;
+
+    private List<Report> staticCodeAnalysisReports;
+
     private String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
     public Api getApi() {
@@ -91,6 +105,15 @@ public class TestResults implements Action {
 
     public void setResults(List<Testsuite> results) {
         this.results = results;
+    }
+
+    @Exported
+    public List<Report> getStaticCodeAnalysisReports() {
+        return staticCodeAnalysisReports;
+    }
+
+    public void setStaticCodeAnalysisReports(List<Report> staticCodeAnalysisReports) {
+        this.staticCodeAnalysisReports = staticCodeAnalysisReports;
     }
 
     @CheckForNull
