@@ -17,6 +17,7 @@ import jenkins.tasks.SimpleBuildStep;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpException;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -188,6 +189,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
     }
 
     @Extension
+    @Symbol("sendTestResults")
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
         @Override
