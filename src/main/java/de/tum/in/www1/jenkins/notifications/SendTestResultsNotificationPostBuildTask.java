@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import de.tum.in.www1.jenkins.notifications.model.*;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 
@@ -31,9 +32,6 @@ import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
 import de.tum.in.ase.parser.exception.ParserException;
 import de.tum.in.www1.jenkins.notifications.exception.TestParsingException;
-import de.tum.in.www1.jenkins.notifications.model.Commit;
-import de.tum.in.www1.jenkins.notifications.model.TestResults;
-import de.tum.in.www1.jenkins.notifications.model.Testsuite;
 
 import hudson.Extension;
 import hudson.FilePath;
@@ -74,7 +72,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_REPORTS_PATH);
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
-        final TestResults results = rememberTestResults(run, testReports, staticCodeAnalysisReport);
+        final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
         final Secret secret = Objects.requireNonNull(CredentialsProvider
                 .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList()))
                 .getSecret();
@@ -105,7 +103,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                 .collect(Collectors.toList());
     }
 
-    private TestResults rememberTestResults(@Nonnull Run<?, ?> run, List<Testsuite> testReports, List<Report> staticCodeAnalysisReports) {
+    private TestResults combineTestResults(@Nonnull Run<?, ?> run, List<Testsuite> testReports, List<Report> staticCodeAnalysisReports) {
         int skipped = 0;
         int failed = 0;
         int successful = 0;

@@ -58,7 +58,8 @@ Email: krusche[at]in[dot]tum[dot]de
           "errors": null,
           "failures": [
             {
-              "message": "Problem: the class 'ThermoAdapter' was not found within the submission. Please implement it properly.",
+              "message": "Problem: the class 'ThermoAdapter' was not found within the submission. Please implement it properly.", // Only reported with JUnit 4
+              "messageWithStackTrace":"org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
               "type": "java.lang.AssertionError"
             }
           ],
@@ -80,7 +81,8 @@ Email: krusche[at]in[dot]tum[dot]de
           "errors": null,
           "failures": [
             {
-              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase. You did not implement the class in the exercise.",
+              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase. You did not implement the class in the exercise.", // Only reported with JUnit 4
+              "messageWithStackTrace":"org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
               "type": "java.lang.AssertionError"
             }
           ],
@@ -102,7 +104,8 @@ Email: krusche[at]in[dot]tum[dot]de
           "errors": null,
           "failures": [
             {
-              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase You did not implement the class in the exercise.",
+              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase You did not implement the class in the exercise.", // Only reported with JUnit 4
+              "messageWithStackTrace":"org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
               "type": "java.lang.AssertionError"
             }
           ],
@@ -124,7 +127,8 @@ Email: krusche[at]in[dot]tum[dot]de
           "errors": null,
           "failures": [
             {
-              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase You did not implement the class in the exercise.",
+              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase You did not implement the class in the exercise.",  // Only reported with JUnit 4
+              "messageWithStackTrace":"org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
               "type": "java.lang.AssertionError"
             }
           ],
