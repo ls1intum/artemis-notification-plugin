@@ -1,15 +1,16 @@
 package de.tum.in.www1.jenkins.notifications;
 
-import com.google.gson.Gson;
-import hudson.util.Secret;
-import de.tum.in.www1.jenkins.notifications.model.TestResults;
+import java.io.IOException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 
-import java.io.IOException;
+import com.google.gson.Gson;
+
+import de.tum.in.www1.jenkins.notifications.model.TestResults;
 
 public class HttpHelper {
 
