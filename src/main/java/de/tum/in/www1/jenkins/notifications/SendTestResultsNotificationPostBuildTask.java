@@ -12,7 +12,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import de.tum.in.www1.jenkins.notifications.model.*;
 import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 
@@ -32,6 +31,7 @@ import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
 import de.tum.in.ase.parser.exception.ParserException;
 import de.tum.in.www1.jenkins.notifications.exception.TestParsingException;
+import de.tum.in.www1.jenkins.notifications.model.*;
 
 import hudson.Extension;
 import hudson.FilePath;
@@ -47,7 +47,6 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import hudson.util.Secret;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
 
@@ -73,9 +72,9 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
         final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
-        final Secret secret = Objects.requireNonNull(CredentialsProvider
-                .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList()))
-                .getSecret();
+        final StringCredentials credentials = CredentialsProvider
+                .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList());
+        final String secret = credentials != null ? credentials.getSecret().getPlainText() : "Credentials containing the Notification Plugin Secret not found";
 
         // Post results to notification URL
         try {

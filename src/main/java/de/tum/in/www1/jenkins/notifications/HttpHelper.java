@@ -1,22 +1,23 @@
 package de.tum.in.www1.jenkins.notifications;
 
-import com.google.gson.Gson;
-import hudson.util.Secret;
-import de.tum.in.www1.jenkins.notifications.model.TestResults;
+import java.io.IOException;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.entity.ContentType;
 
-import java.io.IOException;
+import com.google.gson.Gson;
+
+import de.tum.in.www1.jenkins.notifications.model.TestResults;
 
 public class HttpHelper {
 
-    public static void postTestResults(TestResults results, String url, Secret token) throws IOException, HttpException {
+    public static void postTestResults(TestResults results, String url, String secret) throws IOException, HttpException {
         final String body = new Gson().toJson(results);
         final HttpResponse response = Request.Post(url)
-                .addHeader("Authorization", token.getPlainText())
+                .addHeader("Authorization", secret)
                 .addHeader("Accept", ContentType.APPLICATION_JSON.getMimeType())
                 .bodyString(body, ContentType.APPLICATION_JSON)
                 .execute()
