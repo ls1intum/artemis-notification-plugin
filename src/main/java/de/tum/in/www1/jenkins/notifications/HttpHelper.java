@@ -13,10 +13,10 @@ import java.io.IOException;
 
 public class HttpHelper {
 
-    public static void postTestResults(TestResults results, String url, Secret token) throws IOException, HttpException {
+    public static void postTestResults(TestResults results, String url, String secret) throws IOException, HttpException {
         final String body = new Gson().toJson(results);
         final HttpResponse response = Request.Post(url)
-                .addHeader("Authorization", token.getPlainText())
+                .addHeader("Authorization", secret)
                 .addHeader("Accept", ContentType.APPLICATION_JSON.getMimeType())
                 .bodyString(body, ContentType.APPLICATION_JSON)
                 .execute()

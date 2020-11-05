@@ -73,9 +73,9 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
         final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
-        final Secret secret = Objects.requireNonNull(CredentialsProvider
-                .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList()))
-                .getSecret();
+        final StringCredentials credentials = CredentialsProvider
+                .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList());
+        final String secret = credentials != null ? credentials.getSecret().getPlainText() : "Credentials containing the Notification Plugin Secret not found";
 
         // Post results to notification URL
         try {
