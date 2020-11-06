@@ -11,6 +11,10 @@
     <artifactId>test-notifications</artifactId>
     <version>1.2.1</version>
     <packaging>hpi</packaging>
+    <organization>
+        <name>LS1 TUM</name>
+        <url>https://ase.in.tum.de</url>
+    </organization>
     <properties>
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
         <jenkins.version>2.176.1</jenkins.version>
@@ -85,7 +89,7 @@
         <dependency>
             <groupId>de.tum.in.ase</groupId>
             <artifactId>static-code-analysis-parser</artifactId>
-            <version>1.3.0</version>
+            <version>1.3.1</version>
         </dependency>
     </dependencies>
 
