@@ -13,7 +13,7 @@
     <packaging>hpi</packaging>
     <organization>
         <name>LS1 TUM</name>
-        <url>https://ase.in.tum.de/</url>
+        <url>https://ase.in.tum.de</url>
     </organization>
     <properties>
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
