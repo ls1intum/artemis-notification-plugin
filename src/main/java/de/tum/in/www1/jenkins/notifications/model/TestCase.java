@@ -11,7 +11,6 @@ import java.util.List;
 @ExportedBean(defaultVisibility = 3)
 @XmlRootElement(name = "testcase")
 public class TestCase {
-    @XmlAttribute
     private String name;
     @XmlAttribute
     private String classname;
@@ -19,10 +18,15 @@ public class TestCase {
     private double time;
     private List<Failure> failures;
     private List<Error> errors;
+    private List<SuccessInfo> successInfos;
 
-    @Exported
+    @XmlAttribute
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Exported
@@ -53,5 +57,15 @@ public class TestCase {
     @XmlElement(name = "error")
     public void setErrors(List<Error> errors) {
         this.errors = errors;
+    }
+
+    @Exported
+    public List<SuccessInfo> getSuccessInfos() {
+        return successInfos;
+    }
+
+    @XmlElement(name = "successInfo")
+    public void setSuccessInfos(List<SuccessInfo> successInfos) {
+        this.successInfos = successInfos;
     }
 }

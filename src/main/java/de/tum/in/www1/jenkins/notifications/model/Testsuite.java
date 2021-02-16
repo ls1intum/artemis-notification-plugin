@@ -11,7 +11,6 @@ import java.util.List;
 @ExportedBean(defaultVisibility = 2)
 @XmlRootElement(name = "testsuite")
 public class Testsuite {
-    @XmlAttribute
     private String name;
     @XmlAttribute
     private double time;
@@ -25,9 +24,13 @@ public class Testsuite {
     private int tests;
     private List<TestCase> testCases;
 
-    @Exported
+    @XmlAttribute
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Exported

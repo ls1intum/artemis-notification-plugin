@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
 @ExportedBean(defaultVisibility = 4)
-@XmlRootElement(name = "failure")
-public class Failure {
+@XmlRootElement(name = "successInfo")
+public class SuccessInfo {
     private String message;
     private String messageWithStackTrace;
     private String type;

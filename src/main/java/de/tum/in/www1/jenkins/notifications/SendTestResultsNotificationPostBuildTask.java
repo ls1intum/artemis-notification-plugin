@@ -1,38 +1,14 @@
 package de.tum.in.www1.jenkins.notifications;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import jenkins.model.Jenkins;
-import jenkins.tasks.SimpleBuildStep;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpException;
-import org.jenkinsci.Symbol;
-import org.jenkinsci.plugins.plaincredentials.StringCredentials;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
-
+import com.google.gson.Gson;
 import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
 import de.tum.in.ase.parser.exception.ParserException;
 import de.tum.in.www1.jenkins.notifications.exception.TestParsingException;
 import de.tum.in.www1.jenkins.notifications.model.*;
-
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -47,12 +23,31 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import jenkins.model.Jenkins;
+import jenkins.tasks.SimpleBuildStep;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpException;
+import org.jenkinsci.Symbol;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+
+import javax.annotation.Nonnull;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
 
     private static final String TEST_RESULTS_PATH = "results";
 
     private static final String STATIC_CODE_ANALYSIS_REPORTS_PATH = "staticCodeAnalysisReports";
+
+    private static final String CUSTOM_FEEDBACKS_RESULTS_PATH = "customFeedbacks";
 
     private String credentialsId;
 
@@ -69,8 +64,11 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
             throws InterruptedException, IOException {
         final FilePath testResultsDir = filePath.child(TEST_RESULTS_PATH);
         final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_REPORTS_PATH);
+
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
+        extractCustomFeedbacks(taskListener, filePath.child(CUSTOM_FEEDBACKS_RESULTS_PATH)).ifPresent(testReports::add);
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
+
         final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
         final StringCredentials credentials = CredentialsProvider
                 .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList());
@@ -167,6 +165,69 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
             taskListener.error(e.getMessage(), e);
             return new ArrayList<>();
         }
+    }
+
+    private Optional<Testsuite> extractCustomFeedbacks(@Nonnull TaskListener taskListener, FilePath resultsDir) throws IOException, InterruptedException {
+        final Gson gson = new Gson();
+        final List<CustomFeedback> feedbacks = resultsDir.list()
+                .stream()
+                .filter(path -> path.getName().endsWith(".json"))
+                .map(feedbackFile -> {
+                    try {
+                        final CustomFeedback feedback = gson.fromJson(feedbackFile.readToString(), CustomFeedback.class);
+                        if (feedback.getName() == null) {
+                            throw new IOException("Custom feedbacks need to have a name attribute.");
+                        }
+                        return feedback;
+                    } catch (IOException | InterruptedException e) {
+                        taskListener.error(e.getMessage(), e);
+                        throw new TestParsingException(e);
+                    }
+                }).collect(Collectors.toList());
+
+        if (feedbacks.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(customFeedbacksToTestSuite(feedbacks));
+        }
+    }
+
+    /**
+     * Convert the feedbacks into {@link TestCase}s and wrap them in a {@link Testsuite}
+     *
+     * @param feedbacks the list of parsed custom feedbacks to wrap
+     * @return a Testsuite in the same format as used by JUnit reports
+     */
+    private Testsuite customFeedbacksToTestSuite(final List<CustomFeedback> feedbacks) {
+        final Testsuite suite = new Testsuite();
+        suite.setName("customFeedbackReports");
+
+        final List<TestCase> testCases = feedbacks.stream().map(feedback -> {
+            final TestCase testCase = new TestCase();
+            testCase.setName(feedback.getName());
+
+            if (feedback.isSuccessful()) {
+                final SuccessInfo successInfo = new SuccessInfo();
+                successInfo.setMessage(feedback.getMessage());
+                final List<SuccessInfo> infos = new ArrayList<>();
+                infos.add(successInfo);
+
+                testCase.setSuccessInfos(infos);
+            } else {
+                final Failure failure = new Failure();
+                failure.setMessage(feedback.getMessage());
+                final List<Failure> failures = new ArrayList<>();
+                failures.add(failure);
+
+                testCase.setFailures(failures);
+            }
+
+            return testCase;
+        }).collect(Collectors.toList());
+
+        suite.setTestCases(testCases);
+
+        return suite;
     }
 
     public String getCredentialsId() {
