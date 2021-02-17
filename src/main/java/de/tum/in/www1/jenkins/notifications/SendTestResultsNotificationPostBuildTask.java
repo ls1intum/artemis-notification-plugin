@@ -1,14 +1,36 @@
 package de.tum.in.www1.jenkins.notifications;
 
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import jenkins.model.Jenkins;
+import jenkins.tasks.SimpleBuildStep;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpException;
+import org.jenkinsci.Symbol;
+import org.jenkinsci.plugins.plaincredentials.StringCredentials;
+import org.kohsuke.stapler.AncestorInPath;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 import com.google.gson.Gson;
+
 import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
 import de.tum.in.ase.parser.exception.ParserException;
 import de.tum.in.www1.jenkins.notifications.exception.TestParsingException;
 import de.tum.in.www1.jenkins.notifications.model.*;
+
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -23,23 +45,6 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import jenkins.model.Jenkins;
-import jenkins.tasks.SimpleBuildStep;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpException;
-import org.jenkinsci.Symbol;
-import org.jenkinsci.plugins.plaincredentials.StringCredentials;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-
-import javax.annotation.Nonnull;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
 
@@ -179,7 +184,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                             throw new IOException("Custom feedbacks need to have a name attribute.");
                         }
                         return feedback;
-                    } catch (IOException | InterruptedException e) {
+                    }
+                    catch (IOException | InterruptedException e) {
                         taskListener.error(e.getMessage(), e);
                         throw new TestParsingException(e);
                     }
@@ -187,7 +193,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
 
         if (feedbacks.isEmpty()) {
             return Optional.empty();
-        } else {
+        }
+        else {
             return Optional.of(customFeedbacksToTestSuite(feedbacks));
         }
     }
@@ -213,7 +220,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                 infos.add(successInfo);
 
                 testCase.setSuccessInfos(infos);
-            } else {
+            }
+            else {
                 final Failure failure = new Failure();
                 failure.setMessage(feedback.getMessage());
                 final List<Failure> failures = new ArrayList<>();

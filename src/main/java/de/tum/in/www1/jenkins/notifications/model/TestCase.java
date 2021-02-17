@@ -1,23 +1,30 @@
 package de.tum.in.www1.jenkins.notifications.model;
 
-import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility = 3)
 @XmlRootElement(name = "testcase")
 public class TestCase {
+
     private String name;
+
     @XmlAttribute
     private String classname;
+
     @XmlAttribute
     private double time;
+
     private List<Failure> failures;
+
     private List<Error> errors;
+
     private List<SuccessInfo> successInfos;
 
     @XmlAttribute

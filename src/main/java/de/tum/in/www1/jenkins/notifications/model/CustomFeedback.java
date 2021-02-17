@@ -1,8 +1,11 @@
 package de.tum.in.www1.jenkins.notifications.model;
 
 public class CustomFeedback {
+
     private String name;
+
     private boolean successful;
+
     private String message;
 
     public String getName() {
