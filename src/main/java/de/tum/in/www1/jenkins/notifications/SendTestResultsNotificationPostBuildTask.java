@@ -49,9 +49,9 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
 
     private static final String TEST_RESULTS_PATH = "results";
 
-    private static final String STATIC_CODE_ANALYSIS_REPORTS_PATH = "staticCodeAnalysisReports";
+    private static final String CUSTOM_FEEDBACKS_PATH = "customFeedbacks";
 
-    private static final String CUSTOM_FEEDBACKS_RESULTS_PATH = "customFeedbacks";
+    private static final String STATIC_CODE_ANALYSIS_REPORTS_PATH = "staticCodeAnalysisReports";
 
     private String credentialsId;
 
@@ -67,10 +67,12 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener)
             throws InterruptedException, IOException {
         final FilePath testResultsDir = filePath.child(TEST_RESULTS_PATH);
+        final FilePath customFeedbacksDir = filePath.child(CUSTOM_FEEDBACKS_PATH);
         final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_REPORTS_PATH);
 
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
-        CustomFeedbackParser.extractCustomFeedbacks(taskListener, filePath.child(CUSTOM_FEEDBACKS_RESULTS_PATH)).ifPresent(testReports::add);
+        final Optional<Testsuite> customFeedbacks = CustomFeedbackParser.extractCustomFeedbacks(taskListener, customFeedbacksDir);
+        customFeedbacks.ifPresent(testReports::add);
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
 
         final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
