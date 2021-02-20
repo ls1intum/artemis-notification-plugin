@@ -23,7 +23,6 @@ import org.kohsuke.stapler.QueryParameter;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
-import com.google.gson.Gson;
 
 import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
@@ -71,7 +70,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_REPORTS_PATH);
 
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
-        extractCustomFeedbacks(taskListener, filePath.child(CUSTOM_FEEDBACKS_RESULTS_PATH)).ifPresent(testReports::add);
+        CustomFeedbackParser.extractCustomFeedbacks(taskListener, filePath.child(CUSTOM_FEEDBACKS_RESULTS_PATH)).ifPresent(testReports::add);
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
 
         final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
@@ -170,72 +169,6 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
             taskListener.error(e.getMessage(), e);
             return new ArrayList<>();
         }
-    }
-
-    private Optional<Testsuite> extractCustomFeedbacks(@Nonnull TaskListener taskListener, FilePath resultsDir) throws IOException, InterruptedException {
-        final Gson gson = new Gson();
-        final List<CustomFeedback> feedbacks = resultsDir.list()
-                .stream()
-                .filter(path -> path.getName().endsWith(".json"))
-                .map(feedbackFile -> {
-                    try {
-                        final CustomFeedback feedback = gson.fromJson(feedbackFile.readToString(), CustomFeedback.class);
-                        if (feedback.getName() == null) {
-                            throw new IOException("Custom feedbacks need to have a name attribute.");
-                        }
-                        return feedback;
-                    }
-                    catch (IOException | InterruptedException e) {
-                        taskListener.error(e.getMessage(), e);
-                        throw new TestParsingException(e);
-                    }
-                }).collect(Collectors.toList());
-
-        if (feedbacks.isEmpty()) {
-            return Optional.empty();
-        }
-        else {
-            return Optional.of(customFeedbacksToTestSuite(feedbacks));
-        }
-    }
-
-    /**
-     * Convert the feedbacks into {@link TestCase}s and wrap them in a {@link Testsuite}
-     *
-     * @param feedbacks the list of parsed custom feedbacks to wrap
-     * @return a Testsuite in the same format as used by JUnit reports
-     */
-    private Testsuite customFeedbacksToTestSuite(final List<CustomFeedback> feedbacks) {
-        final Testsuite suite = new Testsuite();
-        suite.setName("customFeedbackReports");
-
-        final List<TestCase> testCases = feedbacks.stream().map(feedback -> {
-            final TestCase testCase = new TestCase();
-            testCase.setName(feedback.getName());
-
-            if (feedback.isSuccessful()) {
-                final SuccessInfo successInfo = new SuccessInfo();
-                successInfo.setMessage(feedback.getMessage());
-                final List<SuccessInfo> infos = new ArrayList<>();
-                infos.add(successInfo);
-
-                testCase.setSuccessInfos(infos);
-            }
-            else {
-                final Failure failure = new Failure();
-                failure.setMessage(feedback.getMessage());
-                final List<Failure> failures = new ArrayList<>();
-                failures.add(failure);
-
-                testCase.setFailures(failures);
-            }
-
-            return testCase;
-        }).collect(Collectors.toList());
-
-        suite.setTestCases(testCases);
-
-        return suite;
     }
 
     public String getCredentialsId() {

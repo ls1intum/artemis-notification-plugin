@@ -24,7 +24,8 @@ where the attributes are:
 * `name`: This is the name of the test case as it will be shown for example on the ‘Configure Grading’ page.
   It should therefore have a for this exercise uniquely identifiable name and **has to be non-null**.
 * `successful`: Indicates if the test case execution for this submission should be marked as successful or failed.
-* `message`: The message shown as additional information to the student. (optional)
+* `message`: The message shown as additional information to the student.
+  **Required for non-sucessful feedback**, optional otherwise.
 
 Additionally, the plugin will parse and send reports created by static code analysis. The tools Spotbugs, Checkstyle and PMD are currently supported.
 The plugin only considers XML reports in the directory _staticCodeAnalysisReports_.
