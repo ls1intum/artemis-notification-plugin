@@ -30,8 +30,16 @@ public class Failure {
         return messageWithStackTrace;
     }
 
+    public void setMessageWithStackTrace(String messageWithStackTrace) {
+        this.messageWithStackTrace = messageWithStackTrace;
+    }
+
     @XmlAttribute
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
