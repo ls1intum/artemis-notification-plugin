@@ -8,6 +8,25 @@ The plugin will collect and merge **all** JUnit formatted test results in the _r
 So, you have to copy or generate all JUnit XML files under this directory, the plugin will take care of merging
 multiple files and posting the results to the specified endpoint.
 
+The JUnit format is limited to allow messages only for failing test cases.
+To circumvent this limitation and allow custom tools to easily send additional feedbacks to Artemis another approach is possible.
+To achieve this, a directory _customFeedbacks_ has to be created.
+Then this plugin will read all JSON files written to this directory and integrate them into the report sent to Artemis.
+The JSON files must have the correct file ending `.json` and have to be in the format
+```json
+{
+  "name": "string",
+  "successful": boolean,
+  "message": "string"
+}
+```
+where the attributes are:
+* `name`: This is the name of the test case as it will be shown for example on the ‘Configure Grading’ page.
+  It should therefore have a for this exercise uniquely identifiable name and **has to be non-null**.
+* `successful`: Indicates if the test case execution for this submission should be marked as successful or failed.
+* `message`: The message shown as additional information to the student.
+  **Required for non-sucessful feedback**, optional otherwise.
+
 Additionally, the plugin will parse and send reports created by static code analysis. The tools Spotbugs, Checkstyle and PMD are currently supported.
 The plugin only considers XML reports in the directory _staticCodeAnalysisReports_.
 
@@ -44,7 +63,7 @@ Email: krusche[at]in[dot]tum[dot]de
     }
   ],
   "errors": 0,
-  "failures": 4,
+  "failures": 5,
   "fullName": "SOME-FOLDER » SOME-JOB #42",
   "results": [
     {
@@ -63,6 +82,7 @@ Email: krusche[at]in[dot]tum[dot]de
               "type": "java.lang.AssertionError"
             }
           ],
+          "successInfos": null,
           "name": "testAdapterValue",
           "time": 0.011
         }
@@ -86,6 +106,7 @@ Email: krusche[at]in[dot]tum[dot]de
               "type": "java.lang.AssertionError"
             }
           ],
+          "successInfos": null,
           "name": "testAttributes[ThermoAdapter]",
           "time": 0.008
         }
@@ -109,6 +130,7 @@ Email: krusche[at]in[dot]tum[dot]de
               "type": "java.lang.AssertionError"
             }
           ],
+          "successInfos": null,
           "name": "testClass[ThermoAdapter]",
           "time": 0.014
         }
@@ -132,12 +154,42 @@ Email: krusche[at]in[dot]tum[dot]de
               "type": "java.lang.AssertionError"
             }
           ],
+          "successInfos": null,
           "name": "testMethods[ThermoAdapter]",
           "time": 0.078
         }
       ],
       "tests": 1,
       "time": 0.078
+    },
+    {
+      "errors": 0,
+      "failures": 1,
+      "name": "customFeedbackReports",
+      "skipped": 0,
+      "testCases": [
+        {
+          "errors": null,
+          "failures": null,
+          "successInfos": [
+            {
+              "message": "A custom message for a successful test case as defined in the JSON."
+            }
+          ],
+          "name": "customFeedbackName001"
+        },
+        {
+          "errors": null,
+          "failures": [
+            {
+              "message": "A custom message for a non-succesful test case as defined in the JSON."
+            }
+          ],
+          "successInfos": null,
+          "name": "customFeedbackName002"
+        }
+      ],
+      "tests": 2
     }
   ],
   "staticCodeAnalysisReports":[

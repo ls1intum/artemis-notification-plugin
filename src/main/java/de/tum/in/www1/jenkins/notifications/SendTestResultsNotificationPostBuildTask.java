@@ -1,10 +1,7 @@
 package de.tum.in.www1.jenkins.notifications;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
@@ -52,6 +49,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
 
     private static final String TEST_RESULTS_PATH = "results";
 
+    private static final String CUSTOM_FEEDBACKS_PATH = "customFeedbacks";
+
     private static final String STATIC_CODE_ANALYSIS_REPORTS_PATH = "staticCodeAnalysisReports";
 
     private String credentialsId;
@@ -68,9 +67,14 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
     public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath, @Nonnull Launcher launcher, @Nonnull TaskListener taskListener)
             throws InterruptedException, IOException {
         final FilePath testResultsDir = filePath.child(TEST_RESULTS_PATH);
+        final FilePath customFeedbacksDir = filePath.child(CUSTOM_FEEDBACKS_PATH);
         final FilePath staticCodeAnalysisResultsDir = filePath.child(STATIC_CODE_ANALYSIS_REPORTS_PATH);
+
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
+        final Optional<Testsuite> customFeedbacks = CustomFeedbackParser.extractCustomFeedbacks(taskListener, customFeedbacksDir);
+        customFeedbacks.ifPresent(testReports::add);
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
+
         final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
         final StringCredentials credentials = CredentialsProvider
                 .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList());

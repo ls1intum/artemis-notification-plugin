@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlValue;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility = 4)
-@XmlRootElement(name = "failure")
-public class Failure {
+@XmlRootElement(name = "successInfo")
+public class SuccessInfo {
 
     private String message;
 
@@ -30,16 +30,8 @@ public class Failure {
         return messageWithStackTrace;
     }
 
-    public void setMessageWithStackTrace(String messageWithStackTrace) {
-        this.messageWithStackTrace = messageWithStackTrace;
-    }
-
     @XmlAttribute
     public String getType() {
         return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 }
