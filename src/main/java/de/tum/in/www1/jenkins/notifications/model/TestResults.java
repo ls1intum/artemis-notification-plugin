@@ -37,7 +37,7 @@ public class TestResults implements Action {
 
     private List<String> logs;
 
-    private Boolean isBuildSuccessful;
+    private boolean isBuildSuccessful;
 
     public Api getApi() {
         return new Api(this);
@@ -130,11 +130,11 @@ public class TestResults implements Action {
     }
 
     @Exported
-    public Boolean isBuildSuccessful() {
+    public boolean isBuildSuccessful() {
         return this.isBuildSuccessful;
     }
 
-    public void setIsBuildSuccessful(Boolean buildSuccessful) {
+    public void setIsBuildSuccessful(boolean buildSuccessful) {
         this.isBuildSuccessful = buildSuccessful;
     }
 
