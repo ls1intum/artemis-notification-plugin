@@ -45,7 +45,6 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import hudson.console.AnnotatedLargeText;
 import hudson.model.Result;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
