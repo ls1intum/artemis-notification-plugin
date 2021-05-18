@@ -119,15 +119,12 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
 
     private List<String> extractLogs(@Nonnull Run<?, ?> run, TaskListener taskListener) {
         final List<String> logs = new ArrayList<>();
-        final StringWriter stringWriter = new StringWriter();
 
-        try {
+        try (StringWriter stringWriter = new StringWriter()) {
             run.getLogText().writeLogTo(0, stringWriter);
 
             final String logString = stringWriter.toString();
             Collections.addAll(logs, logString.split("\n"));
-
-            stringWriter.close();
         }
         catch (IOException ex) {
             taskListener.error(ex.getMessage(), ex);
