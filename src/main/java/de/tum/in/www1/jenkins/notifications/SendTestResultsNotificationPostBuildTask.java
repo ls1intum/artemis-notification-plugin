@@ -36,6 +36,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.plugins.git.util.BuildData;
@@ -45,7 +46,6 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import hudson.model.Result;
 
 public class SendTestResultsNotificationPostBuildTask extends Recorder implements SimpleBuildStep {
 
@@ -123,15 +123,16 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
 
         try {
             run.getLogText().writeLogTo(0, stringWriter);
-            
+
             final String logString = stringWriter.toString();
             Collections.addAll(logs, logString.split("\n"));
 
             stringWriter.close();
-        } catch(IOException ex) {
+        }
+        catch (IOException ex) {
             taskListener.error(ex.getMessage(), ex);
-        } 
-        
+        }
+
         return logs;
     }
 
