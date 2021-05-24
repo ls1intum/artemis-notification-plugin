@@ -35,6 +35,10 @@ public class TestResults implements Action {
 
     private String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
+    private List<String> logs;
+
+    private boolean isBuildSuccessful;
+
     public Api getApi() {
         return new Api(this);
     }
@@ -114,6 +118,24 @@ public class TestResults implements Action {
 
     public void setStaticCodeAnalysisReports(List<Report> staticCodeAnalysisReports) {
         this.staticCodeAnalysisReports = staticCodeAnalysisReports;
+    }
+
+    @Exported
+    public List<String> getLogs() {
+        return logs;
+    }
+
+    public void setLogs(List<String> logs) {
+        this.logs = logs;
+    }
+
+    @Exported
+    public boolean isBuildSuccessful() {
+        return this.isBuildSuccessful;
+    }
+
+    public void setIsBuildSuccessful(boolean buildSuccessful) {
+        this.isBuildSuccessful = buildSuccessful;
     }
 
     @CheckForNull

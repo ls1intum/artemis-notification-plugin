@@ -1,6 +1,7 @@
 package de.tum.in.www1.jenkins.notifications;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,6 +36,7 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractProject;
 import hudson.model.Item;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.plugins.git.util.BuildData;
@@ -76,6 +78,15 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
 
         final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
+
+        // Set build status
+        results.setIsBuildSuccessful(run.getResult() == Result.SUCCESS);
+
+        // Add build logs only if the build failed
+        if (!results.isBuildSuccessful()) {
+            results.setLogs(extractLogs(run, taskListener));
+        }
+
         final StringCredentials credentials = CredentialsProvider
                 .findCredentialById(credentialsId, StringCredentials.class, run, Collections.emptyList());
         final String secret = credentials != null ? credentials.getSecret().getPlainText() : "Credentials containing the Notification Plugin Secret not found";
@@ -104,6 +115,22 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                     }
                 })
                 .collect(Collectors.toList());
+    }
+
+    private List<String> extractLogs(@Nonnull Run<?, ?> run, TaskListener taskListener) {
+        final List<String> logs = new ArrayList<>();
+
+        try (StringWriter stringWriter = new StringWriter()) {
+            run.getLogText().writeLogTo(0, stringWriter);
+
+            final String logString = stringWriter.toString();
+            Collections.addAll(logs, logString.split("\n"));
+        }
+        catch (IOException ex) {
+            taskListener.error(ex.getMessage(), ex);
+        }
+
+        return logs;
     }
 
     private TestResults combineTestResults(@Nonnull Run<?, ?> run, List<Testsuite> testReports, List<Report> staticCodeAnalysisReports) {
