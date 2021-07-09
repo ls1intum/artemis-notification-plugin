@@ -25,11 +25,11 @@ import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
 
-import de.tum.in.ase.parser.ReportParser;
 import de.tum.in.ase.parser.domain.Report;
-import de.tum.in.ase.parser.exception.ParserException;
 import de.tum.in.www1.jenkins.notifications.exception.TestParsingException;
-import de.tum.in.www1.jenkins.notifications.model.*;
+import de.tum.in.www1.jenkins.notifications.model.Commit;
+import de.tum.in.www1.jenkins.notifications.model.TestResults;
+import de.tum.in.www1.jenkins.notifications.model.Testsuite;
 
 import hudson.Extension;
 import hudson.FilePath;
@@ -75,7 +75,7 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
         final List<Testsuite> testReports = extractTestResults(taskListener, testResultsDir);
         final Optional<Testsuite> customFeedbacks = CustomFeedbackParser.extractCustomFeedbacks(taskListener, customFeedbacksDir);
         customFeedbacks.ifPresent(testReports::add);
-        final List<Report> staticCodeAnalysisReport = parseStaticCodeAnalysisReports(taskListener, staticCodeAnalysisResultsDir);
+        final List<Report> staticCodeAnalysisReport = StaticCodeAnalysisParser.parseReports(taskListener, staticCodeAnalysisResultsDir);
 
         final TestResults results = combineTestResults(run, testReports, staticCodeAnalysisReport);
 
@@ -171,33 +171,6 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
                     return commit;
                 })
                 .collect(Collectors.toList());
-    }
-
-    private List<Report> parseStaticCodeAnalysisReports(TaskListener taskListener, FilePath staticCodeAnalysisResultDir) {
-        // Static code analysis parsing must not crash the sending of notifications under any circumstances
-        try {
-            List<Report> reports = new ArrayList<>();
-            ReportParser reportParser = new ReportParser();
-            for (FilePath filePath : staticCodeAnalysisResultDir.list()) {
-                if (!filePath.getName().endsWith(".xml")) {
-                    continue;
-                }
-
-                // Try to parse each report separately. Failure parsing one report should not effect the parsing of others
-                try {
-                    Report report = reportParser.transformToReport(filePath.read());
-                    reports.add(report);
-                }
-                catch (ParserException | IOException | InterruptedException e) {
-                    taskListener.error(e.getMessage(), e);
-                }
-            }
-            return reports;
-        }
-        catch (Exception e) {
-            taskListener.error(e.getMessage(), e);
-            return new ArrayList<>();
-        }
     }
 
     public String getCredentialsId() {
