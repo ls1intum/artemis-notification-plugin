@@ -9,7 +9,7 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>test-notifications</artifactId>
-    <version>1.4.2</version>
+    <version>1.5.0</version>
     <packaging>hpi</packaging>
     <organization>
         <name>LS1 TUM</name>
@@ -17,7 +17,7 @@
     </organization>
     <properties>
         <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
-        <jenkins.version>2.277.4</jenkins.version>
+        <jenkins.version>2.303.1</jenkins.version>
         <java.level>8</java.level>
         <spotless.version>2.12.1</spotless.version>
         <!-- Other properties you may want to use:
@@ -47,6 +47,11 @@
         </dependencies>
     </dependencyManagement>
     <dependencies>
+    	<dependency>
+			<groupId>io.jenkins.plugins</groupId>
+			<artifactId>jaxb</artifactId>
+			<version>2.3.0.1</version>
+		</dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>

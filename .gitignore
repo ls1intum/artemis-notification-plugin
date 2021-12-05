@@ -30,3 +30,6 @@ hs_err_pid*
 target
 work
 backup
+.settings/
+*.project
+*.classpath
