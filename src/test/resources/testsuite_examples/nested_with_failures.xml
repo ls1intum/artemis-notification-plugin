@@ -1,0 +1,43 @@
+<?xml version='1.0' ?>
+<testsuite name="Tests" tests="12">
+    <testsuite name="Properties" tests="9">
+        <testsuite name="Checked by SmallCheck" tests="6">
+            <testcase name="Testing filtering in A" time="0.000" classname="Tests.Properties.Checked by SmallCheck">
+                <failure>there exist (0,1) [(1,0)] such that
+                    condition is false
+                </failure>
+            </testcase>
+            <testcase name="Testing mapping in A" time="0.000" classname="Tests.Properties.Checked by SmallCheck"/>
+            <testcase name="Testing filtering in B" time="0.000" classname="Tests.Properties.Checked by SmallCheck"/>
+            <testcase name="Testing mapping in B" time="0.000" classname="Tests.Properties.Checked by SmallCheck"/>
+            <testcase name="Testing filtering in C" time="0.002" classname="Tests.Properties.Checked by SmallCheck"/>
+            <testcase name="Testing mapping in C" time="0.000" classname="Tests.Properties.Checked by SmallCheck">
+                <error>Some error message</error>
+            </testcase>
+        </testsuite>
+        <testsuite name="Checked by QuickCheck" tests="3">
+            <testcase name="Testing A against sample solution" time="0.000"
+                      classname="Tests.Properties.Checked by QuickCheck">
+                <failure>*** Failed! (after 5 tests and 5 shrinks):
+
+                    &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; expected
+                    [ ( 1 , 0 ) ]
+                    &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt; but got
+                    [ ( -2 , 0 ) ]
+                    (0,1)
+                    [(1,0)]
+                    Use --quickcheck-replay=220998 to reproduce.
+                </failure>
+            </testcase>
+            <testcase name="Testing B against sample solution" time="0.000"
+                      classname="Tests.Properties.Checked by QuickCheck"/>
+            <testcase name="Testing C against sample solution" time="0.000"
+                      classname="Tests.Properties.Checked by QuickCheck"/>
+        </testsuite>
+    </testsuite>
+    <testsuite name="Unit Tests" tests="3">
+        <testcase name="Testing selectAndReflectA (0,0) []" time="0.000" classname="Tests.Unit Tests"/>
+        <testcase name="Testing selectAndReflectB (0,1) [(0,0)]" time="0.000" classname="Tests.Unit Tests"/>
+        <testcase name="Testing selectAndReflectC (0,1) [(-1,-1)]" time="0.000" classname="Tests.Unit Tests"/>
+    </testsuite>
+</testsuite>

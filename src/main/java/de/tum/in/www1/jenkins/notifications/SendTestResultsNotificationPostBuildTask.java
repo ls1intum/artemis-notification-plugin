@@ -110,7 +110,8 @@ public class SendTestResultsNotificationPostBuildTask extends Recorder implement
             try {
                 final JAXBContext context = createJAXBContext();
                 final Unmarshaller unmarshaller = context.createUnmarshaller();
-                return (Testsuite) unmarshaller.unmarshal(report.read());
+                Testsuite testsuite = (Testsuite) unmarshaller.unmarshal(report.read());
+                return testsuite.flatten();
             }
             catch (JAXBException | IOException | InterruptedException e) {
                 taskListener.error(e.getMessage(), e);
