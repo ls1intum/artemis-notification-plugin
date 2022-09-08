@@ -55,11 +55,13 @@ Email: krusche[at]in[dot]tum[dot]de
   "commits": [
     {
       "hash": "413aa48eed159aa9753fa559f28b48ac91734c2cf",
-      "repositorySlug": "test-repository"
+      "repositorySlug": "test-repository",
+      "branchName":"main"
     },
     {
       "hash": "3843ea74cf837a9374de324ca374988aa8347ffe8",
-      "repositorySlug": "other-test-repository"
+      "repositorySlug": "other-test-repository",
+      "branchName":"main"
     }
   ],
   "errors": 0,
@@ -77,8 +79,9 @@ Email: krusche[at]in[dot]tum[dot]de
           "errors": null,
           "failures": [
             {
-              "message": "Problem: the class 'ThermoAdapter' was not found within the submission. Please implement it properly.", // Only reported with JUnit 4
-              "messageWithStackTrace":"org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
+              "message": "Problem: the class 'ThermoAdapter' was not found within the submission. Please implement it properly.",
+              // Only reported with JUnit 4
+              "messageWithStackTrace": "org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
               "type": "java.lang.AssertionError"
             }
           ],
@@ -101,8 +104,9 @@ Email: krusche[at]in[dot]tum[dot]de
           "errors": null,
           "failures": [
             {
-              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase. You did not implement the class in the exercise.", // Only reported with JUnit 4
-              "messageWithStackTrace":"org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
+              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase. You did not implement the class in the exercise.",
+              // Only reported with JUnit 4
+              "messageWithStackTrace": "org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
               "type": "java.lang.AssertionError"
             }
           ],
@@ -125,8 +129,9 @@ Email: krusche[at]in[dot]tum[dot]de
           "errors": null,
           "failures": [
             {
-              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase You did not implement the class in the exercise.", // Only reported with JUnit 4
-              "messageWithStackTrace":"org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
+              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase You did not implement the class in the exercise.",
+              // Only reported with JUnit 4
+              "messageWithStackTrace": "org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
               "type": "java.lang.AssertionError"
             }
           ],
@@ -149,8 +154,9 @@ Email: krusche[at]in[dot]tum[dot]de
           "errors": null,
           "failures": [
             {
-              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase You did not implement the class in the exercise.",  // Only reported with JUnit 4
-              "messageWithStackTrace":"org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
+              "message": "The exercise expects a class with the name ThermoAdapter in the package de.tum.in.ase You did not implement the class in the exercise.",
+              // Only reported with JUnit 4
+              "messageWithStackTrace": "org.opentest4j.AssertionFailedError: The class \u0027MergeSort\u0027 does not implement the interface \u0027SortStrategy\u0027 as expected. Implement the interface and its methods.\n\tat de.test.ClassTest.testClass(ClassTest.java:128)\n\tat de.test.ClassTest.lambda$generateTestsForAllClasses$0(ClassTest.java:53)\n",
               "type": "java.lang.AssertionError"
             }
           ],
@@ -192,53 +198,53 @@ Email: krusche[at]in[dot]tum[dot]de
       "tests": 2
     }
   ],
-  "staticCodeAnalysisReports":[
-     {
-        "tool":"SPOTBUGS",
-        "issues":[
-           {
-               "filePath":"/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
-               "startLine":16,
-               "endLine":16,
-               "rule":"ES_COMPARING_PARAMETER_STRING_WITH_EQ",
-               "category":"BAD_PRACTICE",
-               "message":"Comparison of String parameter using == or != in com.stefan.staticCodeAnalysis.App.equalString(String)",
-               "priority":"1"
-           }
-        ]
-     },
-     {
-        "tool":"CHECKSTYLE",
-        "issues":[
-           {
-               "filePath":"/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
-               "startLine":7,
-               "endLine":7,
-               "startColumn":1,
-               "endColumn":1,
-               "rule":"HideUtilityClassConstructorCheck",
-               "category":"design",
-               "message":"Utility classes should not have a public or default constructor.",
-               "priority":"error"
-           }
-        ]
-     },
-     {
-        "tool":"PMD",
-        "issues":[
-           {
-               "filePath":"/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
-               "startLine":10,
-               "endLine":10,
-               "startColumn":16,
-               "endColumn":16,
-               "rule":"UnusedLocalVariable",
-               "category":"Best Practices",
-               "message":"Avoid unused local variables such as 'b'.",
-               "priority":"3"
-           }
-        ]
-     }
+  "staticCodeAnalysisReports": [
+    {
+      "tool": "SPOTBUGS",
+      "issues": [
+        {
+          "filePath": "/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
+          "startLine": 16,
+          "endLine": 16,
+          "rule": "ES_COMPARING_PARAMETER_STRING_WITH_EQ",
+          "category": "BAD_PRACTICE",
+          "message": "Comparison of String parameter using == or != in com.stefan.staticCodeAnalysis.App.equalString(String)",
+          "priority": "1"
+        }
+      ]
+    },
+    {
+      "tool": "CHECKSTYLE",
+      "issues": [
+        {
+          "filePath": "/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
+          "startLine": 7,
+          "endLine": 7,
+          "startColumn": 1,
+          "endColumn": 1,
+          "rule": "HideUtilityClassConstructorCheck",
+          "category": "design",
+          "message": "Utility classes should not have a public or default constructor.",
+          "priority": "error"
+        }
+      ]
+    },
+    {
+      "tool": "PMD",
+      "issues": [
+        {
+          "filePath": "/buildDir/testExercise/assignment/src/com/ls1/staticCodeAnalysis/App.java",
+          "startLine": 10,
+          "endLine": 10,
+          "startColumn": 16,
+          "endColumn": 16,
+          "rule": "UnusedLocalVariable",
+          "category": "Best Practices",
+          "message": "Avoid unused local variables such as 'b'.",
+          "priority": "3"
+        }
+      ]
+    }
   ],
   "runDate": "2020-02-19T14:42:42.084Z[Etc/UTC]",
   "skipped": 0,

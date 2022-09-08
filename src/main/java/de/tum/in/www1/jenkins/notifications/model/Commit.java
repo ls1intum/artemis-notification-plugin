@@ -5,8 +5,12 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean(defaultVisibility = 2)
 public class Commit {
+
     private String hash;
+
     private String repositorySlug;
+
+    private String branchName;
 
     @Exported
     public String getHash() {
@@ -24,5 +28,14 @@ public class Commit {
 
     public void setRepositorySlug(String repositorySlug) {
         this.repositorySlug = repositorySlug;
+    }
+
+    @Exported
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
     }
 }
