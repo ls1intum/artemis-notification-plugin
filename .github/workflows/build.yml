@@ -1,103 +1,20 @@
-name: Continous Integration
+name: Continuous Delivery
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
-    tags: 'v[0-9]+.[0-9]+.[0-9]+'
-    paths-ignore:
-      - './idea'
-      - 'README.md'
-      - 'LICENSE'
-      - '.github/**'
-      - '!.github/workflows/**'
-
-env:
-  java: 1.8
+  release:
+    types: [published]
 
 jobs:
-
-  build:
+  build-image:
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Java
-        uses: actions/setup-java@v1
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v1
         with:
-          java-version: '${{ env.java }}'
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Spotless
-        run: mvn -B spotless:check
-      - name: Build
-        run: mvn package -B -DskipTests=true
-      - name: Copy artifact
-        run: mkdir staging && cp target/*.hpi staging
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: plugin
-          path: staging
-
-  release:
-    needs: [build, test]
-    if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Get tag
-        id: get_version
-        run: echo ::set-output name=VERSION::$(echo $GITHUB_REF | cut -d / -f 3)
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          release_name: Release ${{ steps.get_version.outputs.VERSION }}
-          draft: false
-          prerelease: false
-      - name: Download pre-build artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: plugin
-          path: staging
-      - name: Get artifact name
-        id: get_artifact_name
-        run: |
-          cd staging
-          echo ::set-output name=ARTIFACT::$(ls *.hpi)
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: staging/${{ steps.get_artifact_name.outputs.ARTIFACT }}
-          asset_name: ${{ steps.get_artifact_name.outputs.ARTIFACT }}
-          asset_content_type: application/zip
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: '${{ env.java }}'
-      - uses: actions/checkout@v2
-      - name: Cache Maven packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Tests
-        run: mvn -B test
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          push: true
+          tags: ${{github.ref_name}}
