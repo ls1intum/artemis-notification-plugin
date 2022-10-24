@@ -31,19 +31,19 @@ where the attributes are:
 
 ## Usage
 Before executing the application make sure that the following environment variables are set:
-* `TEST_RESULTS_DIR`: The directory where the JUnit XML files are located.
-* `CUSTOM_FEEDBACK_DIR`: The directory where the custom feedback JSON files are located.
-* `TEST_GIT_HASH`: The git hash of the commit of the test repository.
-* `TEST_GIT_REPOSITORY_SLUG`: The slug of the test repository.
-* `TEST_GIT_BRANCH`: The branch of the test repository.
-* `SUBMISSION_GIT_HASH`: The git hash of the commit of the submission repository (the student repositories, the template or the solution repository) that was tested.
-* `SUBMISSION_GIT_REPOSITORY_SLUG`: The slug of the submission repository.
-* `SUBMISSION_GIT_BRANCH`: The branch of the submission repository.
-* `BUILD_PLAN_ID`: The id of the build plan. This is used to identify the participation.
-* `BUILD_STATUS`: The status of the build. If the build was successful, this must be set to `success`.
-* `BUILD_LOGS_FILE`: The path to the log file of the build.
-* `NOTIFICATION_URL`: The URL of the server to which the notification should be sent.
-* `NOTIFICATION_SECRET`: The secret used to authenticate the notification request.
+* `ARTEMIS_TEST_RESULTS_DIR`: The directory where the JUnit XML files are located.
+* `ARTEMIS_CUSTOM_FEEDBACK_DIR`: The directory where the custom feedback JSON files are located.
+* `ARTEMIS_TEST_GIT_HASH`: The git hash of the commit of the test repository.
+* `ARTEMIS_TEST_GIT_REPOSITORY_SLUG`: The slug of the test repository.
+* `ARTEMIS_TEST_GIT_BRANCH`: The branch of the test repository.
+* `ARTEMIS_SUBMISSION_GIT_HASH`: The git hash of the commit of the submission repository (the student repositories, the template or the solution repository) that was tested.
+* `ARTEMIS_SUBMISSION_GIT_REPOSITORY_SLUG`: The slug of the submission repository.
+* `ARTEMIS_SUBMISSION_GIT_BRANCH`: The branch of the submission repository.
+* `ARTEMIS_BUILD_PLAN_ID`: The id of the build plan. This is used to identify the participation.
+* `ARTEMIS_BUILD_STATUS`: The status of the build. If the build was successful, this must be set to `success`.
+* `ARTEMIS_BUILD_LOGS_FILE`: The path to the log file of the build.
+* `ARTEMIS_NOTIFICATION_URL`: The URL of the server to which the notification should be sent.
+* `ARTEMIS_NOTIFICATION_SECRET`: The secret used to authenticate the notification request.
 
 
 To execute the application, run `gradle run`.

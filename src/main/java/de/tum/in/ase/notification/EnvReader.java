@@ -7,31 +7,33 @@ public class EnvReader {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private static final String TEST_RESULTS_DIR_KEY = "TEST_RESULTS_DIR";
+    private static final String PREFIX = "ARTEMIS_";
 
-    private static final String CUSTOM_FEEDBACK_DIR_KEY = "CUSTOM_FEEDBACK_DIR";
+    private static final String TEST_RESULTS_DIR_KEY = PREFIX + "TEST_RESULTS_DIR";
 
-    private static final String TEST_GIT_HASH_KEY = "TEST_GIT_HASH";
+    private static final String CUSTOM_FEEDBACK_DIR_KEY = PREFIX + "CUSTOM_FEEDBACK_DIR";
 
-    private static final String TEST_GIT_REPOSITORY_SLUG_KEY = "TEST_GIT_REPOSITORY_SLUG";
+    private static final String TEST_GIT_HASH_KEY = PREFIX + "TEST_GIT_HASH";
 
-    private static final String TEST_GIT_BRANCH_KEY = "TEST_GIT_BRANCH";
+    private static final String TEST_GIT_REPOSITORY_SLUG_KEY = PREFIX + "TEST_GIT_REPOSITORY_SLUG";
 
-    private static final String SUBMISSION_GIT_HASH_KEY = "SUBMISSION_GIT_HASH";
+    private static final String TEST_GIT_BRANCH_KEY = PREFIX + "TEST_GIT_BRANCH";
 
-    private static final String SUBMISSION_GIT_REPOSITORY_SLUG_KEY = "SUBMISSION_GIT_REPOSITORY_SLUG";
+    private static final String SUBMISSION_GIT_HASH_KEY = PREFIX + "SUBMISSION_GIT_HASH";
 
-    private static final String SUBMISSION_GIT_BRANCH_KEY = "SUBMISSION_GIT_BRANCH";
+    private static final String SUBMISSION_GIT_REPOSITORY_SLUG_KEY = PREFIX + "SUBMISSION_GIT_REPOSITORY_SLUG";
 
-    private static final String BUILD_PLAN_ID_KEY = "BUILD_PLAN_ID";
+    private static final String SUBMISSION_GIT_BRANCH_KEY = PREFIX + "SUBMISSION_GIT_BRANCH";
 
-    private static final String BUILD_STATUS_KEY = "BUILD_STATUS";
+    private static final String BUILD_PLAN_ID_KEY = PREFIX + "BUILD_PLAN_ID";
 
-    private static final String BUILD_LOGS_FILE_KEY = "BUILD_LOGS_FILE";
+    private static final String BUILD_STATUS_KEY = PREFIX + "BUILD_STATUS";
 
-    private static final String NOTIFICATION_URL_KEY = "NOTIFICATION_URL";
+    private static final String BUILD_LOGS_FILE_KEY = PREFIX + "BUILD_LOGS_FILE";
 
-    private static final String NOTIFICATION_SECRET_KEY = "NOTIFICATION_SECRET";
+    private static final String NOTIFICATION_URL_KEY = PREFIX + "NOTIFICATION_URL";
+
+    private static final String NOTIFICATION_SECRET_KEY = PREFIX + "NOTIFICATION_SECRET";
 
     private EnvReader() {
     }
