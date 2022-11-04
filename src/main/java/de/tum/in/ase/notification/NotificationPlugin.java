@@ -61,6 +61,12 @@ public class NotificationPlugin {
 
     private List<Testsuite> extractTestResults(Path resultsDir) throws IOException {
         LOGGER.debug("Extracting test results from " + resultsDir);
+
+        if (Files.notExists(resultsDir)) {
+            LOGGER.warn("The results directory for custom feedback does not exist: " + resultsDir);
+            return new ArrayList<>();
+        }
+
         return Files.walk(resultsDir, 1)
                 // TODO: .filter(path -> path.endsWith(".xml"))
                 .filter(Files::isRegularFile)
