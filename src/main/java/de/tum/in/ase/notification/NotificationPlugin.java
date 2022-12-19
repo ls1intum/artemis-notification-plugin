@@ -1,19 +1,25 @@
 package de.tum.in.ase.notification;
 
+import com.google.gson.Gson;
+import de.tum.in.ase.notification.configuration.Context;
+import de.tum.in.ase.notification.configuration.ContextFactory;
 import de.tum.in.ase.notification.exception.TestParsingException;
 import de.tum.in.ase.notification.model.Commit;
 import de.tum.in.ase.notification.model.TestResults;
 import de.tum.in.ase.notification.model.Testsuite;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
-import org.apache.logging.log4j.Level;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.Configurator;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,42 +28,76 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static de.tum.in.ase.notification.EnvReader.*;
-
-public class NotificationPlugin {
+/**
+ * Abstract class for the notification plugin. All other subtypes of the plugin, e.g. the CLI plugin, should extend this as this class provides the basic functionality.
+ */
+public abstract class NotificationPlugin {
     private static final Logger LOGGER = LogManager.getLogger();
+    protected final ContextFactory contextFactory;
 
-    public NotificationPlugin() {
-        Configurator.setRootLevel(Level.ALL);
+    protected NotificationPlugin(ContextFactory contextFactory) {
+        this.contextFactory = contextFactory;
     }
 
-    public static void main(String[] args) throws IOException {
-        new NotificationPlugin().run();
-    }
-
-    public void run() throws IOException {
+    /**
+     * Runs the plugin. This includes reading the test results, parsing them and sending them to the Artemis server.
+     *
+     * @param context the context containing the configuration.
+     * @throws IOException if one of the result directories is not readable.
+     */
+    public void run(Context context) throws IOException {
         final Path currentPath = Paths.get(".").toAbsolutePath().normalize();
-        final Path testResultsDir = currentPath.resolve(Paths.get(getTestResultsDir()));
-        final Path customFeedbackDir = currentPath.resolve(Paths.get(getCustomFeedbackDir()));
-        final Path buildLogsFile = currentPath.resolve(Paths.get(getBuildLogsFile()));
+        final Path testResultsDir = currentPath.resolve(Paths.get(context.getTestResultsDir()));
+        final Path customFeedbackDir = currentPath.resolve(Paths.get(context.getCustomFeedbackDir()));
+        final Path buildLogsFile = currentPath.resolve(Paths.get(context.getBuildLogsFile()));
 
         final List<Testsuite> testReports = extractTestResults(testResultsDir);
         final Optional<Testsuite> customFeedback = CustomFeedbackParser.extractCustomFeedbacks(customFeedbackDir);
         customFeedback.ifPresent(testReports::add);
 
-        final TestResults results = combineTestResults(testReports);
+        final TestResults results = combineTestResults(testReports, context);
 
-        results.setIsBuildSuccessful(getBuildStatus().equalsIgnoreCase("success"));
+        results.setIsBuildSuccessful(context.getBuildStatus().equalsIgnoreCase("success"));
 
         results.setLogs(extractLogs(buildLogsFile));
 
+        postResult(results, context);
+    }
+
+    /**
+     * Sends the test results to the Artemis server.
+     * @param results the test results to send.
+     * @param context the context containing the configuration.
+     */
+    public void postResult(TestResults results, Context context) {
         try {
-            HttpHelper.postTestResults(results, getNotificationUrl(), getNotificationSecret());
-        } catch (HttpException e) {
+            final String body = new Gson().toJson(results);
+
+            LOGGER.debug("Posting test results to {}: {}", context.getNotificationUrl(), body);
+
+            final HttpResponse response = Request.Post(context.getNotificationUrl())
+                    .addHeader("Authorization", context.getNotificationSecret())
+                    .addHeader("Accept", ContentType.APPLICATION_JSON.getMimeType())
+                    .bodyString(body, ContentType.APPLICATION_JSON)
+                    .execute()
+                    .returnResponse();
+
+            if (response.getStatusLine().getStatusCode() != 200) {
+                throw new HttpException(String.format("Sending test results failed (%d) with response: %s",
+                        response.getStatusLine().getStatusCode(), IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset())));
+            }
+        } catch (HttpException | IOException e) {
             // TODO: taskListener.error(e.getMessage(), e);
             LOGGER.error(e.getMessage(), e);
         }
     }
+
+    /**
+     * Provides the context, which contains the configuration for the plugin.
+     *
+     * @return the context object.
+     */
+    public abstract Context provideContext();
 
     private List<Testsuite> extractTestResults(Path resultsDir) throws IOException {
         LOGGER.debug("Extracting test results from " + resultsDir);
@@ -85,7 +125,7 @@ public class NotificationPlugin {
                 }).collect(Collectors.toList());
     }
 
-    private TestResults combineTestResults(List<Testsuite> testReports) {
+    private TestResults combineTestResults(List<Testsuite> testReports, Context context) {
         LOGGER.debug("Combining test results");
 
         int skipped = 0;
@@ -102,8 +142,8 @@ public class NotificationPlugin {
         final TestResults results = new TestResults();
         results.setResults(testReports);
         // results.setStaticCodeAnalysisReports(staticCodeAnalysisReports);
-        results.setCommits(getCommits());
-        results.setFullName(getBuildPlanIdKey());
+        results.setCommits(getCommits(context));
+        results.setFullName(context.getBuildPlanId());
         results.setErrors(errors);
         results.setSkipped(skipped);
         results.setSuccessful(successful);
@@ -111,16 +151,16 @@ public class NotificationPlugin {
         return results;
     }
 
-    private List<Commit> getCommits() {
+    private List<Commit> getCommits(Context context) {
         final Commit testCommit = new Commit();
-        testCommit.setHash(getTestGitHashKey());
-        testCommit.setBranchName(getTestGitBranch());
-        testCommit.setRepositorySlug(getTestGitRepositorySlug());
+        testCommit.setHash(context.getTestGitHash());
+        testCommit.setBranchName(context.getTestGitBranch());
+        testCommit.setRepositorySlug(context.getTestGitRepositorySlug());
 
         final Commit submissionCommit = new Commit();
-        submissionCommit.setHash(getSubmissionGitHashKey());
-        submissionCommit.setBranchName(getSubmissionGitBranch());
-        submissionCommit.setRepositorySlug(getSubmissionGitRepositorySlug());
+        submissionCommit.setHash(context.getSubmissionGitHash());
+        submissionCommit.setBranchName(context.getSubmissionGitBranch());
+        submissionCommit.setRepositorySlug(context.getSubmissionGitRepositorySlug());
 
         final List<Commit> commits = new ArrayList<>();
         commits.add(testCommit);

@@ -1,9 +1,9 @@
-package de.tum.in.ase.notification;
+package de.tum.in.ase.notification.configuration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class EnvReader {
+public class EnvReader extends ContextFactory {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -35,10 +35,32 @@ public class EnvReader {
 
     private static final String NOTIFICATION_SECRET_KEY = PREFIX + "NOTIFICATION_SECRET";
 
-    private EnvReader() {
+    @Override
+    public Context buildContext() {
+        return new Context(
+                getEnvVariable(TEST_RESULTS_DIR_KEY),
+                getEnvVariable(CUSTOM_FEEDBACK_DIR_KEY),
+                getEnvVariable(TEST_GIT_HASH_KEY),
+                getEnvVariable(TEST_GIT_REPOSITORY_SLUG_KEY),
+                getEnvVariable(TEST_GIT_BRANCH_KEY),
+                getEnvVariable(SUBMISSION_GIT_HASH_KEY),
+                getEnvVariable(SUBMISSION_GIT_REPOSITORY_SLUG_KEY),
+                getEnvVariable(SUBMISSION_GIT_BRANCH_KEY),
+                getEnvVariable(BUILD_PLAN_ID_KEY),
+                getEnvVariable(BUILD_STATUS_KEY),
+                getEnvVariable(BUILD_LOGS_FILE_KEY),
+                getEnvVariable(NOTIFICATION_URL_KEY),
+                getEnvVariable(NOTIFICATION_SECRET_KEY)
+        );
     }
 
-    private static String getEnv(String key) {
+    /**
+     * Get the value of an environment variable.
+     *
+     * @param key The key of the environment variable.
+     * @return The value of the environment variable.
+     */
+    public String getEnvVariable(String key) {
         LOGGER.debug("Getting environment variable: " + key);
         final String value = System.getenv(key);
         if (value == null) {
@@ -46,57 +68,5 @@ public class EnvReader {
             throw new IllegalStateException("Environment variable " + key + " is unset");
         }
         return System.getenv(key);
-    }
-
-    public static String getTestResultsDir() {
-        return getEnv(TEST_RESULTS_DIR_KEY);
-    }
-
-    public static String getCustomFeedbackDir() {
-        return getEnv(CUSTOM_FEEDBACK_DIR_KEY);
-    }
-
-    public static String getTestGitHashKey() {
-        return getEnv(TEST_GIT_HASH_KEY);
-    }
-
-    public static String getTestGitRepositorySlug() {
-        return getEnv(TEST_GIT_REPOSITORY_SLUG_KEY);
-    }
-
-    public static String getTestGitBranch() {
-        return getEnv(TEST_GIT_BRANCH_KEY);
-    }
-
-    public static String getSubmissionGitHashKey() {
-        return getEnv(SUBMISSION_GIT_HASH_KEY);
-    }
-
-    public static String getSubmissionGitRepositorySlug() {
-        return getEnv(SUBMISSION_GIT_REPOSITORY_SLUG_KEY);
-    }
-
-    public static String getSubmissionGitBranch() {
-        return getEnv(SUBMISSION_GIT_BRANCH_KEY);
-    }
-
-    public static String getBuildPlanIdKey() {
-        return getEnv(BUILD_PLAN_ID_KEY);
-    }
-
-    public static String getBuildStatus() {
-        return getEnv(BUILD_STATUS_KEY);
-    }
-
-    public static String getBuildLogsFile() {
-        return getEnv(BUILD_LOGS_FILE_KEY);
-    }
-
-    public static String getNotificationUrl() {
-        return getEnv(NOTIFICATION_URL_KEY);
-    }
-
-    public static String getNotificationSecret() {
-        return getEnv(NOTIFICATION_SECRET_KEY);
     }
 }
