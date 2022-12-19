@@ -27,7 +27,7 @@ dependencies {
 }
 
 application {
-    getMainClass().set("de.tum.in.ase.notification.NotificationPlugin")
+    getMainClass().set("de.tum.in.ase.notification.CLIPlugin")
 }
 
 test {
