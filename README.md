@@ -5,6 +5,18 @@ Based on the [Jenkins Server Notification Plugin](https://github.com/ls1intum/je
 In difference to the Jenkins and [Bamboo Server Notification Plugin](https://github.com/ls1intum/bamboo-server-notification-plugin), this tool does not depend on any particular Continuous Integration System (CIS), but can be used with any CIS.
 Therefore, no information can be fetched from the API of the CIS and all required configurations must be set as an environment variable.
 
+## System Design
+
+![Class Diagram](docs/class-diagram.drawio.png "Class Diagram")
+
+This plugin contains the common feedback extraction and sending logic, which is used by all CIS plugins.
+All required configurations must be passed as a `Context` object.
+
+Depending on the CIS, the `Context` object is created differently.
+Thus, we use the Strategy Pattern to bind dynamically a suitable `ContextFactory` for this CIS.
+
+The implementation of the Jenkins and Bamboo part is not done yet.
+
 ## Which results will get published?
 The plugin will collect and merge **all** JUnit formatted test results in the _results_ directory in a build.\
 So, you have to copy or generate all JUnit XML files under this directory, the plugin will take care of merging
