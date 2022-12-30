@@ -8,10 +8,13 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "error")
 @XmlType(name = "error", namespace = "http://www.w3.org/2001/XMLSchema-instance")
 public class Error {
+
     @XmlAttribute
     private String message;
+
     @XmlValue
     private String messageWithStackTrace;
+
     @XmlAttribute
     private String type;
 

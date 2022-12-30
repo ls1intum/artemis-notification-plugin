@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class CustomFeedbackParser {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(CustomFeedbackParser.class);
 
     private CustomFeedbackParser() {
     }
@@ -30,10 +30,10 @@ public class CustomFeedbackParser {
      * @throws IOException          if the resultsDir is not readable.
      */
     public static Optional<Testsuite> extractCustomFeedbacks(Path resultsDir) throws IOException {
-        LOGGER.debug("Extracting custom feedbacks from " + resultsDir);
+        LOGGER.debug("Extracting custom feedbacks from {}", resultsDir);
 
         if (Files.notExists(resultsDir)) {
-            LOGGER.warn("The results directory for custom feedback does not exist: " + resultsDir);
+            LOGGER.warn("The results directory for custom feedback does not exist: {}", resultsDir);
             return Optional.empty();
         }
 
@@ -48,7 +48,8 @@ public class CustomFeedbackParser {
                         }
                         validateCustomFeedback(feedbackFile.getFileName().toString(), feedback);
                         return Optional.of(feedback);
-                    } catch (IOException e) {
+                    }
+                    catch (IOException e) {
                         // TODO: taskListener.error(e.getMessage(), e);
                         LOGGER.error(e.getMessage(), e);
                         return Optional.empty();
@@ -60,7 +61,8 @@ public class CustomFeedbackParser {
 
         if (feedbacks.isEmpty()) {
             return Optional.empty();
-        } else {
+        }
+        else {
             return Optional.of(customFeedbacksToTestSuite(feedbacks));
         }
     }
@@ -105,7 +107,8 @@ public class CustomFeedbackParser {
                 infos.add(successInfo);
 
                 testCase.setSuccessInfos(infos);
-            } else {
+            }
+            else {
                 final Failure failure = new Failure();
                 failure.setMessage(feedback.getMessage());
                 final List<Failure> failures = new ArrayList<>();

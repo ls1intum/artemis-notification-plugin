@@ -18,7 +18,7 @@ public class TestCase {
 
     private List<Failure> failures;
 
-    private List<java.lang.Error> errors;
+    private List<Error> errors;
 
     private List<SuccessInfo> successInfos;
 
@@ -48,12 +48,12 @@ public class TestCase {
         this.failures = failures;
     }
 
-    public List<java.lang.Error> getErrors() {
+    public List<Error> getErrors() {
         return errors;
     }
 
     @XmlElement(name = "error")
-    public void setErrors(List<java.lang.Error> errors) {
+    public void setErrors(List<Error> errors) {
         this.errors = errors;
     }
 

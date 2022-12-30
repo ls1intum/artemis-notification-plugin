@@ -4,21 +4,37 @@ package de.tum.in.ase.notification.configuration;
  * The context object is used to provide the plugin with all the information it needs to perform its task.
  */
 public class Context {
+    private static final String SUCCESS_MESSAGE = "success";
+
     private final String testResultsDir;
+
     private final String customFeedbackDir;
+
     private final String testGitHash;
+
     private final String testGitRepositorySlug;
+
     private final String testGitBranch;
+
     private final String submissionGitHash;
+
     private final String submissionGitRepositorySlug;
+
     private final String submissionGitBranch;
+
     private final String buildPlanId;
+
     private final String buildStatus;
+
     private final String buildLogsFile;
+
     private final String notificationUrl;
+
     private final String notificationSecret;
 
-    public Context(String testResultsDir, String customFeedbackDir, String testGitHash, String testGitRepositorySlug, String testGitBranch, String submissionGitHash, String submissionGitRepositorySlug, String submissionGitBranch, String buildPlanId, String buildStatus, String buildLogsFile, String notificationUrl, String notificationSecret) {
+    public Context(String testResultsDir, String customFeedbackDir, String testGitHash, String testGitRepositorySlug, String testGitBranch, String submissionGitHash,
+            String submissionGitRepositorySlug, String submissionGitBranch, String buildPlanId, String buildStatus, String buildLogsFile, String notificationUrl,
+            String notificationSecret) {
         this.testResultsDir = testResultsDir;
         this.customFeedbackDir = customFeedbackDir;
         this.testGitHash = testGitHash;
@@ -84,5 +100,9 @@ public class Context {
 
     public String getNotificationSecret() {
         return notificationSecret;
+    }
+
+    public boolean isBuildSuccessful() {
+        return buildStatus != null && buildStatus.equalsIgnoreCase(SUCCESS_MESSAGE);
     }
 }

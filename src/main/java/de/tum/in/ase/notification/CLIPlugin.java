@@ -8,12 +8,11 @@ import org.apache.logging.log4j.core.config.Configurator;
 import java.io.IOException;
 
 public class CLIPlugin extends NotificationPlugin {
+
     public CLIPlugin() {
         super(new EnvReader());
         Configurator.setRootLevel(Level.ALL);
     }
-
-
 
     public static void main(String[] args) throws IOException {
         CLIPlugin plugin = new CLIPlugin();

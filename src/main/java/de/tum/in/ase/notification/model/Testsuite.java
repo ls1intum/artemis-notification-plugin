@@ -34,7 +34,8 @@ public class Testsuite {
     private static String buildTestCaseName(final Testsuite suite, final TestCase testCase) {
         if (suite.name == null) {
             return testCase.getName();
-        } else {
+        }
+        else {
             return suite.name + '.' + testCase.getName();
         }
     }

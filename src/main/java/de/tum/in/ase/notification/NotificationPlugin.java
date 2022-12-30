@@ -32,7 +32,9 @@ import java.util.stream.Collectors;
  * Abstract class for the notification plugin. All other subtypes of the plugin, e.g. the CLI plugin, should extend this as this class provides the basic functionality.
  */
 public abstract class NotificationPlugin {
-    private static final Logger LOGGER = LogManager.getLogger();
+
+    private static final Logger LOGGER = LogManager.getLogger(NotificationPlugin.class);
+
     protected final ContextFactory contextFactory;
 
     protected NotificationPlugin(ContextFactory contextFactory) {
@@ -57,7 +59,7 @@ public abstract class NotificationPlugin {
 
         final TestResults results = combineTestResults(testReports, context);
 
-        results.setIsBuildSuccessful(context.getBuildStatus().equalsIgnoreCase("success"));
+        results.setIsBuildSuccessful(context.isBuildSuccessful());
 
         results.setLogs(extractLogs(buildLogsFile));
 
@@ -86,8 +88,8 @@ public abstract class NotificationPlugin {
                 throw new HttpException(String.format("Sending test results failed (%d) with response: %s",
                         response.getStatusLine().getStatusCode(), IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset())));
             }
-        } catch (HttpException | IOException e) {
-            // TODO: taskListener.error(e.getMessage(), e);
+        }
+        catch (HttpException | IOException e) {
             LOGGER.error(e.getMessage(), e);
         }
     }
@@ -100,29 +102,30 @@ public abstract class NotificationPlugin {
     public abstract Context provideContext();
 
     private List<Testsuite> extractTestResults(Path resultsDir) throws IOException {
-        LOGGER.debug("Extracting test results from " + resultsDir);
+        LOGGER.debug("Extracting test results from {}", resultsDir);
 
         if (Files.notExists(resultsDir)) {
-            LOGGER.warn("The results directory for custom feedback does not exist: " + resultsDir);
+            LOGGER.warn("The custom feedback directory does not exist: {}", resultsDir);
             return new ArrayList<>();
         }
 
         return Files.walk(resultsDir, 1)
-                // TODO: .filter(path -> path.endsWith(".xml"))
+                .filter(path -> path.toString().endsWith(".xml"))
                 .filter(Files::isRegularFile)
-                .map(report -> {
-                    try {
-                        final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
-                        final Unmarshaller unmarshaller = context.createUnmarshaller();
-                        Testsuite testsuite = (Testsuite) unmarshaller.unmarshal(Files.newInputStream(report));
-                        System.out.println(testsuite.flatten());
-                        return testsuite.flatten();
-                    } catch (JAXBException | IOException e) {
-                        // TODO: taskListener.error(e.getMessage(), e);
-                        LOGGER.error(e.getMessage(), e);
-                        throw new TestParsingException(e);
-                    }
-                }).collect(Collectors.toList());
+                .map(this::extractSingleReportFromFile).collect(Collectors.toList());
+    }
+
+    private Testsuite extractSingleReportFromFile(Path report) {
+        try {
+            final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
+            final Unmarshaller unmarshaller = context.createUnmarshaller();
+            Testsuite testsuite = (Testsuite) unmarshaller.unmarshal(Files.newInputStream(report));
+            return testsuite.flatten();
+        }
+        catch (JAXBException | IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw new TestParsingException(e);
+        }
     }
 
     private TestResults combineTestResults(List<Testsuite> testReports, Context context) {

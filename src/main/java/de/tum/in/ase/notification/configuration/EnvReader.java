@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 public class EnvReader extends ContextFactory {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(EnvReader.class);
 
     private static final String PREFIX = "ARTEMIS_";
 
@@ -50,8 +50,7 @@ public class EnvReader extends ContextFactory {
                 getEnvVariable(BUILD_STATUS_KEY),
                 getEnvVariable(BUILD_LOGS_FILE_KEY),
                 getEnvVariable(NOTIFICATION_URL_KEY),
-                getEnvVariable(NOTIFICATION_SECRET_KEY)
-        );
+                getEnvVariable(NOTIFICATION_SECRET_KEY));
     }
 
     /**
@@ -61,12 +60,12 @@ public class EnvReader extends ContextFactory {
      * @return The value of the environment variable.
      */
     public String getEnvVariable(String key) {
-        LOGGER.debug("Getting environment variable: " + key);
+        LOGGER.debug("Getting environment variable: {}", key);
         final String value = System.getenv(key);
         if (value == null) {
             LOGGER.fatal("Environment variable {} is unset", key);
             throw new IllegalStateException("Environment variable " + key + " is unset");
         }
-        return System.getenv(key);
+        return value;
     }
 }

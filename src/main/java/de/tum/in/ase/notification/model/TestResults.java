@@ -35,7 +35,6 @@ public class TestResults {
         return runDate;
     }
 
-
     public int getSuccessful() {
         return successful;
     }
@@ -43,7 +42,6 @@ public class TestResults {
     public void setSuccessful(int successful) {
         this.successful = successful;
     }
-
 
     public int getSkipped() {
         return skipped;
