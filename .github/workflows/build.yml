@@ -14,21 +14,9 @@ on:
       - created
 
 jobs:
-  checkstyle:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up JDK 8
-        uses: actions/setup-java@v1
-        with:
-          java-version: 8
-      - name: Check code style
-        run: ./gradlew spotlessCheck
-
   buildx:
     name: Build and Push the Docker Images
     runs-on: ubuntu-latest
-    depends-on: [checkstyle]
     steps:
       - name: Compute Tag
         uses: actions/github-script@v6

@@ -4,6 +4,7 @@ package de.tum.in.ase.notification.configuration;
  * The context object is used to provide the plugin with all the information it needs to perform its task.
  */
 public class Context {
+
     private static final String SUCCESS_MESSAGE = "success";
 
     private final String testResultsDir;
