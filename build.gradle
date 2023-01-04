@@ -1,0 +1,45 @@
+plugins {
+    id "java"
+    id "application"
+    id "com.diffplug.spotless" version "6.12.0"
+}
+
+group "de.tum.in.ase.notification"
+version "0.0.1"
+description "Notification Plugin for Sending Test Reports to Artemis"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "de.tum.in.ase:static-code-analysis-parser:1.4.0"
+    implementation "org.apache.logging.log4j:log4j-api:${log4j_version}"
+    implementation "org.apache.logging.log4j:log4j-core:${log4j_version}"
+    implementation "com.google.code.gson:gson:2.9.0"
+    implementation "commons-io:commons-io:2.11.0"
+    implementation "org.apache.httpcomponents:fluent-hc:4.5.13"
+    implementation "com.google.code.findbugs:jsr305:3.0.2"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.13.4"
+    implementation "com.sun.xml.bind:jaxb-impl:2.3.1"
+    implementation "com.sun.xml.bind:jaxb-core:2.3.0.1"
+    implementation "javax.xml.bind:jaxb-api:2.3.1"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junit_version}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junit_version}"
+}
+
+application {
+    getMainClass().set("de.tum.in.ase.notification.CLIPlugin")
+}
+
+test {
+    useJUnitPlatform()
+}
+
+spotless {
+    ratchetFrom "origin/main"
+
+    java{
+        eclipse().configFile("spotless-style.xml")
+    }
+}
