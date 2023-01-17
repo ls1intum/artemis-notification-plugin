@@ -1,4 +1,4 @@
-package de.tum.in.ase.notification.configuration;
+package de.tum.cit.ase.artemis_notification_plugin.configuration;
 
 /**
  * The context object is used to provide the plugin with all the information it needs to perform its task.

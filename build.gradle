@@ -4,7 +4,7 @@ plugins {
     id "com.diffplug.spotless" version "6.12.0"
 }
 
-group "de.tum.in.ase.notification"
+group "de.tum.cit.ase.artemis_notification_plugin"
 version "0.0.1"
 description "Notification Plugin for Sending Test Reports to Artemis"
 
@@ -29,7 +29,7 @@ dependencies {
 }
 
 application {
-    getMainClass().set("de.tum.in.ase.notification.CLIPlugin")
+    getMainClass().set("de.tum.cit.ase.artemis_notification_plugin.CLIPlugin")
 }
 
 test {

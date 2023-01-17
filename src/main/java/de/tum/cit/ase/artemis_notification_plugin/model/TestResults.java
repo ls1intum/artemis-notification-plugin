@@ -1,8 +1,7 @@
-package de.tum.in.ase.notification.model;
+package de.tum.cit.ase.artemis_notification_plugin.model;
 
 import de.tum.in.ase.parser.domain.Report;
 
-import javax.annotation.CheckForNull;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;

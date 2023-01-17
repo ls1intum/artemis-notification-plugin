@@ -1,4 +1,4 @@
-package de.tum.in.ase.notification.configuration;
+package de.tum.cit.ase.artemis_notification_plugin.configuration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

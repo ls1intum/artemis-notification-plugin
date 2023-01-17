@@ -1,7 +1,7 @@
-package de.tum.in.ase.notification;
+package de.tum.cit.ase.artemis_notification_plugin;
 
 import com.google.gson.Gson;
-import de.tum.in.ase.notification.model.*;
+import de.tum.cit.ase.artemis_notification_plugin.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,4 +1,4 @@
-package de.tum.in.ase.notification.model;
+package de.tum.cit.ase.artemis_notification_plugin.model;
 
 public class CustomFeedback {
 

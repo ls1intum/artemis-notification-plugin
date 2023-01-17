@@ -1,7 +1,7 @@
-package de.tum.in.ase.notification;
+package de.tum.cit.ase.artemis_notification_plugin;
 
-import de.tum.in.ase.notification.configuration.Context;
-import de.tum.in.ase.notification.configuration.EnvReader;
+import de.tum.cit.ase.artemis_notification_plugin.configuration.Context;
+import de.tum.cit.ase.artemis_notification_plugin.configuration.EnvReader;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 

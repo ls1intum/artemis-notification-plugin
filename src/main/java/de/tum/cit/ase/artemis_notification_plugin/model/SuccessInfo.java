@@ -1,31 +1,33 @@
-package de.tum.in.ase.notification.model;
+package de.tum.cit.ase.artemis_notification_plugin.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "error")
-@XmlType(name = "error", namespace = "http://www.w3.org/2001/XMLSchema-instance")
-public class Error {
+@XmlRootElement(name = "successInfo")
+public class SuccessInfo {
 
-    @XmlAttribute
     private String message;
 
-    @XmlValue
     private String messageWithStackTrace;
 
-    @XmlAttribute
     private String type;
 
+    @XmlAttribute
     public String getMessage() {
         return message;
     }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @XmlValue
     public String getMessageWithStackTrace() {
         return messageWithStackTrace;
     }
 
+    @XmlAttribute
     public String getType() {
         return type;
     }

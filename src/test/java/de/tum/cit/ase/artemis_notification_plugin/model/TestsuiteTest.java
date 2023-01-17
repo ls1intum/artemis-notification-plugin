@@ -1,6 +1,5 @@
-package de.tum.in.ase.notification.model;
+package de.tum.cit.ase.artemis_notification_plugin.model;
 
-import com.sun.xml.bind.v2.ContextFactory;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;

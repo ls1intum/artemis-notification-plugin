@@ -1,11 +1,11 @@
-package de.tum.in.ase.notification.model;
+package de.tum.cit.ase.artemis_notification_plugin.model;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlValue;
 
-@XmlRootElement(name = "successInfo")
-public class SuccessInfo {
+@XmlRootElement(name = "failure")
+public class Failure {
 
     private String message;
 
@@ -27,8 +27,16 @@ public class SuccessInfo {
         return messageWithStackTrace;
     }
 
+    public void setMessageWithStackTrace(String messageWithStackTrace) {
+        this.messageWithStackTrace = messageWithStackTrace;
+    }
+
     @XmlAttribute
     public String getType() {
         return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

@@ -1,12 +1,12 @@
-package de.tum.in.ase.notification;
+package de.tum.cit.ase.artemis_notification_plugin;
 
 import com.google.gson.Gson;
-import de.tum.in.ase.notification.configuration.Context;
-import de.tum.in.ase.notification.configuration.ContextFactory;
-import de.tum.in.ase.notification.exception.TestParsingException;
-import de.tum.in.ase.notification.model.Commit;
-import de.tum.in.ase.notification.model.TestResults;
-import de.tum.in.ase.notification.model.Testsuite;
+import de.tum.cit.ase.artemis_notification_plugin.configuration.Context;
+import de.tum.cit.ase.artemis_notification_plugin.configuration.ContextFactory;
+import de.tum.cit.ase.artemis_notification_plugin.exception.TestParsingException;
+import de.tum.cit.ase.artemis_notification_plugin.model.Commit;
+import de.tum.cit.ase.artemis_notification_plugin.model.TestResults;
+import de.tum.cit.ase.artemis_notification_plugin.model.Testsuite;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;

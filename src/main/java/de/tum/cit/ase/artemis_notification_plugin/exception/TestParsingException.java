@@ -1,4 +1,4 @@
-package de.tum.in.ase.notification.exception;
+package de.tum.cit.ase.artemis_notification_plugin.exception;
 
 public class TestParsingException extends RuntimeException {
 
