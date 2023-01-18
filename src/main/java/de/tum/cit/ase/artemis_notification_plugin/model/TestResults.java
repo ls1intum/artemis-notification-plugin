@@ -1,7 +1,7 @@
 package de.tum.cit.ase.artemis_notification_plugin.model;
 
 import de.tum.in.ase.parser.domain.Report;
-
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -24,7 +24,7 @@ public class TestResults {
 
     private List<Report> staticCodeAnalysisReports;
 
-    private final String runDate = ZonedDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+    private final String runDate = ZonedDateTime.now(ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME);
 
     private List<String> logs;
 

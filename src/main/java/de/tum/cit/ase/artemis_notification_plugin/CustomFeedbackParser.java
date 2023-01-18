@@ -1,10 +1,9 @@
 package de.tum.cit.ase.artemis_notification_plugin;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.google.gson.Gson;
 import de.tum.cit.ase.artemis_notification_plugin.model.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +13,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class CustomFeedbackParser {
 
@@ -37,12 +39,14 @@ public class CustomFeedbackParser {
             return Optional.empty();
         }
 
-        final Gson gson = new Gson();
-        final List<CustomFeedback> feedbacks = Files.walk(resultsDir, 1)
+         var gson = new Gson();
+         List<CustomFeedback> feedbacks ;
+try (Stream<Path> stream = Files.walk(resultsDir, 1)) {
+feedbacks =stream
                 .filter(path -> path.endsWith(".json"))
                 .map((Function<Path, Optional<CustomFeedback>>) feedbackFile -> {
                     try {
-                        final CustomFeedback feedback = gson.fromJson(new String(Files.readAllBytes(feedbackFile)), CustomFeedback.class);
+                         CustomFeedback feedback = gson.fromJson(new String(Files.readAllBytes(feedbackFile), UTF_8), CustomFeedback.class);
                         if (feedback.getMessage() != null && feedback.getMessage().trim().isEmpty()) {
                             feedback.setMessage(null);
                         }
@@ -57,7 +61,7 @@ public class CustomFeedbackParser {
                 })
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());}
 
         if (feedbacks.isEmpty()) {
             return Optional.empty();
@@ -77,7 +81,7 @@ public class CustomFeedbackParser {
      * @param feedback the custom feedback to validate.
      * @throws InvalidPropertiesFormatException if one of the invariants described above does not hold.
      */
-    private static void validateCustomFeedback(final String fileName, final CustomFeedback feedback) throws InvalidPropertiesFormatException {
+    private static void validateCustomFeedback( String fileName,  CustomFeedback feedback) throws InvalidPropertiesFormatException {
         if (feedback.getName() == null || feedback.getName().trim().isEmpty()) {
             throw new InvalidPropertiesFormatException(String.format("Custom feedback from file %s needs to have a name attribute.", fileName));
         }
@@ -92,26 +96,26 @@ public class CustomFeedbackParser {
      * @param feedbacks the list of parsed custom feedbacks to wrap
      * @return a Testsuite in the same format as used by JUnit reports
      */
-    private static Testsuite customFeedbacksToTestSuite(final List<CustomFeedback> feedbacks) {
-        final Testsuite suite = new Testsuite();
+    private static Testsuite customFeedbacksToTestSuite( List<CustomFeedback> feedbacks) {
+         var suite = new Testsuite();
         suite.setName("customFeedbackReports");
 
-        final List<TestCase> testCases = feedbacks.stream().map(feedback -> {
-            final TestCase testCase = new TestCase();
+         List<TestCase> testCases = feedbacks.stream().map(feedback -> {
+             var testCase = new TestCase();
             testCase.setName(feedback.getName());
 
             if (feedback.isSuccessful()) {
-                final SuccessInfo successInfo = new SuccessInfo();
+                 var successInfo = new SuccessInfo();
                 successInfo.setMessage(feedback.getMessage());
-                final List<SuccessInfo> infos = new ArrayList<>();
+                 List<SuccessInfo> infos = new ArrayList<>();
                 infos.add(successInfo);
 
                 testCase.setSuccessInfos(infos);
             }
             else {
-                final Failure failure = new Failure();
+                 var failure = new Failure();
                 failure.setMessage(feedback.getMessage());
-                final List<Failure> failures = new ArrayList<>();
+                 List<Failure> failures = new ArrayList<>();
                 failures.add(failure);
 
                 testCase.setFailures(failures);

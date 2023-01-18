@@ -15,7 +15,7 @@ public class CLIPlugin extends NotificationPlugin {
     }
 
     public static void main(String[] args) throws IOException {
-        CLIPlugin plugin = new CLIPlugin();
+        var plugin = new CLIPlugin();
         new CLIPlugin().run(plugin.provideContext());
     }
 

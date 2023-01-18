@@ -61,7 +61,7 @@ public class EnvReader extends ContextFactory {
      */
     public String getEnvVariable(String key) {
         LOGGER.debug("Getting environment variable: {}", key);
-        final String value = System.getenv(key);
+         String value = System.getenv(key);
         if (value == null) {
             LOGGER.fatal("Environment variable {} is unset", key);
             throw new IllegalStateException("Environment variable " + key + " is unset");

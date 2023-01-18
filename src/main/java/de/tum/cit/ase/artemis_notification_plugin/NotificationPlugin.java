@@ -1,5 +1,6 @@
 package de.tum.cit.ase.artemis_notification_plugin;
 
+import com.google.errorprone.annotations.Var;
 import com.google.gson.Gson;
 import de.tum.cit.ase.artemis_notification_plugin.configuration.Context;
 import de.tum.cit.ase.artemis_notification_plugin.configuration.ContextFactory;
@@ -7,17 +8,6 @@ import de.tum.cit.ase.artemis_notification_plugin.exception.TestParsingException
 import de.tum.cit.ase.artemis_notification_plugin.model.Commit;
 import de.tum.cit.ase.artemis_notification_plugin.model.TestResults;
 import de.tum.cit.ase.artemis_notification_plugin.model.Testsuite;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpException;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.entity.ContentType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -27,6 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.fluent.Request;
+import org.apache.http.entity.ContentType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Abstract class for the notification plugin. All other subtypes of the plugin, e.g. the CLI plugin, should extend this as this class provides the basic functionality.
@@ -48,16 +49,16 @@ public abstract class NotificationPlugin {
      * @throws IOException if one of the result directories is not readable.
      */
     public void run(Context context) throws IOException {
-        final Path currentPath = Paths.get(".").toAbsolutePath().normalize();
-        final Path testResultsDir = currentPath.resolve(Paths.get(context.getTestResultsDir()));
-        final Path customFeedbackDir = currentPath.resolve(Paths.get(context.getCustomFeedbackDir()));
-        final Path buildLogsFile = currentPath.resolve(Paths.get(context.getBuildLogsFile()));
+         Path currentPath = Paths.get(".").toAbsolutePath().normalize();
+         Path testResultsDir = currentPath.resolve(Paths.get(context.getTestResultsDir()));
+         Path customFeedbackDir = currentPath.resolve(Paths.get(context.getCustomFeedbackDir()));
+         Path buildLogsFile = currentPath.resolve(Paths.get(context.getBuildLogsFile()));
 
-        final List<Testsuite> testReports = extractTestResults(testResultsDir);
-        final Optional<Testsuite> customFeedback = CustomFeedbackParser.extractCustomFeedbacks(customFeedbackDir);
+         List<Testsuite> testReports = extractTestResults(testResultsDir);
+         Optional<Testsuite> customFeedback = CustomFeedbackParser.extractCustomFeedbacks(customFeedbackDir);
         customFeedback.ifPresent(testReports::add);
 
-        final TestResults results = combineTestResults(testReports, context);
+         TestResults results = combineTestResults(testReports, context);
 
         results.setIsBuildSuccessful(context.isBuildSuccessful());
 
@@ -73,11 +74,11 @@ public abstract class NotificationPlugin {
      */
     public void postResult(TestResults results, Context context) {
         try {
-            final String body = new Gson().toJson(results);
+             String body = new Gson().toJson(results);
 
             LOGGER.debug("Posting test results to {}: {}", context.getNotificationUrl(), body);
 
-            final HttpResponse response = Request.Post(context.getNotificationUrl())
+             HttpResponse response = Request.Post(context.getNotificationUrl())
                     .addHeader("Authorization", context.getNotificationSecret())
                     .addHeader("Accept", ContentType.APPLICATION_JSON.getMimeType())
                     .bodyString(body, ContentType.APPLICATION_JSON)
@@ -109,17 +110,18 @@ public abstract class NotificationPlugin {
             return new ArrayList<>();
         }
 
-        return Files.walk(resultsDir, 1)
+        try (Stream<Path> stream = Files.walk(resultsDir, 1)) {
+return stream
                 .filter(path -> path.toString().endsWith(".xml"))
                 .filter(Files::isRegularFile)
-                .map(this::extractSingleReportFromFile).collect(Collectors.toList());
+                .map(this::extractSingleReportFromFile).collect(Collectors.toList());}
     }
 
     private Testsuite extractSingleReportFromFile(Path report) {
         try {
-            final JAXBContext context = JAXBContext.newInstance(Testsuite.class);
-            final Unmarshaller unmarshaller = context.createUnmarshaller();
-            Testsuite testsuite = (Testsuite) unmarshaller.unmarshal(Files.newInputStream(report));
+             var context = JAXBContext.newInstance(Testsuite.class);
+             Unmarshaller unmarshaller = context.createUnmarshaller();
+            var testsuite = (Testsuite) unmarshaller.unmarshal(Files.newInputStream(report));
             return testsuite.flatten();
         }
         catch (JAXBException | IOException e) {
@@ -131,18 +133,18 @@ public abstract class NotificationPlugin {
     private TestResults combineTestResults(List<Testsuite> testReports, Context context) {
         LOGGER.debug("Combining test results");
 
-        int skipped = 0;
-        int failed = 0;
-        int successful = 0;
-        int errors = 0;
-        for (final Testsuite suite : testReports) {
+        @Var int skipped = 0;
+        @Var int failed = 0;
+        @Var int successful = 0;
+        @Var int errors = 0;
+        for ( Testsuite suite : testReports) {
             successful += suite.getTests() - (suite.getErrors() + suite.getFailures() + suite.getSkipped());
             failed += suite.getFailures();
             errors += suite.getErrors();
             skipped += suite.getSkipped();
         }
 
-        final TestResults results = new TestResults();
+         var results = new TestResults();
         results.setResults(testReports);
         // results.setStaticCodeAnalysisReports(staticCodeAnalysisReports);
         results.setCommits(getCommits(context));
@@ -155,17 +157,17 @@ public abstract class NotificationPlugin {
     }
 
     private List<Commit> getCommits(Context context) {
-        final Commit testCommit = new Commit();
+         var testCommit = new Commit();
         testCommit.setHash(context.getTestGitHash());
         testCommit.setBranchName(context.getTestGitBranch());
         testCommit.setRepositorySlug(context.getTestGitRepositorySlug());
 
-        final Commit submissionCommit = new Commit();
+         var submissionCommit = new Commit();
         submissionCommit.setHash(context.getSubmissionGitHash());
         submissionCommit.setBranchName(context.getSubmissionGitBranch());
         submissionCommit.setRepositorySlug(context.getSubmissionGitRepositorySlug());
 
-        final List<Commit> commits = new ArrayList<>();
+         List<Commit> commits = new ArrayList<>();
         commits.add(testCommit);
         commits.add(submissionCommit);
         return commits;

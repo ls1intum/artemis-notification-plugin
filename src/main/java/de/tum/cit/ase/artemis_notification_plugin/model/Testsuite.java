@@ -31,7 +31,7 @@ public class Testsuite {
 
     private List<TestCase> testCases;
 
-    private static String buildTestCaseName(final Testsuite suite, final TestCase testCase) {
+    private static String buildTestCaseName( Testsuite suite,  TestCase testCase) {
         if (suite.name == null) {
             return testCase.getName();
         }
@@ -126,7 +126,7 @@ public class Testsuite {
      *
      * @param other Some other test suite.
      */
-    private void addOther(final Testsuite other) {
+    private void addOther( Testsuite other) {
         if (testCases == null) {
             testCases = new ArrayList<>();
         }
@@ -147,10 +147,10 @@ public class Testsuite {
      *
      * @param additionalTestCases The test case that will be separately added to the test cases of this suite.
      */
-    private void updateTestCaseCounts(final List<TestCase> additionalTestCases) {
+    private void updateTestCaseCounts( List<TestCase> additionalTestCases) {
         tests += additionalTestCases.size();
 
-        for (final TestCase testCase : additionalTestCases) {
+        for ( TestCase testCase : additionalTestCases) {
             if (testCase.getFailures() != null) {
                 failures += 1;
             }
