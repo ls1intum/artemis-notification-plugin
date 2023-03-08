@@ -14,6 +14,35 @@ on:
       - created
 
 jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+          cache: 'gradle'
+      - name: Production Build
+        run: ./gradlew clean jar
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: artemis-notification-plugin.jar
+          path: build/libs/artemis-notification-plugin-*.jar
+      - name: Upload Release Artifact
+        if: github.event_name == 'release' && github.event.action == 'created'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: build/libs/artemis-notification-plugin-${{ github.event.release.tag_name }}.jar
+          asset_name: artemis-notification-plugin.jar
+          asset_content_type: application/x-webarchive
+
   buildx:
     name: Build and Push the Docker Images
     runs-on: ubuntu-latest

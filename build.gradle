@@ -32,6 +32,18 @@ application {
     getMainClass().set("de.tum.cit.ase.artemis_notification_plugin.CLIPlugin")
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'de.tum.cit.ase.artemis_notification_plugin.CLIPlugin'
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 test {
     useJUnitPlatform()
 }
