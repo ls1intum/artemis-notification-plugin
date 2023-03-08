@@ -3,7 +3,7 @@ WORKDIR /notification-plugin
 COPY . ./
 RUN gradle clean jar
 
-FROM eclipse-temurin:8-alpine
+FROM eclipse-temurin:8-jre
 WORKDIR /notification-plugin
 COPY --from=build /notification-plugin/artemis-notification-plugin-*.jar /notification-plugin/artemis-notification-plugin.jar
 
