@@ -1,9 +1,9 @@
-FROM gradle:7.4-jdk8-focal AS build
+FROM gradle:7.4-jdk17 AS build
 WORKDIR /notification-plugin
 COPY . ./
 RUN gradle clean jar
 
-FROM eclipse-temurin:8-jre
+FROM eclipse-temurin:17-jre
 WORKDIR /notification-plugin
 COPY --from=build /notification-plugin/build/libs/artemis-notification-plugin-*.jar /notification-plugin/artemis-notification-plugin.jar
 
