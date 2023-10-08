@@ -5,7 +5,7 @@ plugins {
 }
 
 group "de.tum.cit.ase.artemis_notification_plugin"
-version "0.0.1"
+version "1.2.0"
 description "Notification Plugin for Sending Test Reports to Artemis"
 
 repositories {
