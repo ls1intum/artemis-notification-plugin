@@ -68,6 +68,7 @@ public abstract class NotificationPlugin {
 
     /**
      * Sends the test results to the Artemis server.
+     *
      * @param results the test results to send.
      * @param context the context containing the configuration.
      */

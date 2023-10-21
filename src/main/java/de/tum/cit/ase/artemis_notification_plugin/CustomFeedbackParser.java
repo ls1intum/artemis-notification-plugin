@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Parses the custom feedbacks from the results directory.
+ */
 public class CustomFeedbackParser {
 
     private static final Logger LOGGER = LogManager.getLogger(CustomFeedbackParser.class);
