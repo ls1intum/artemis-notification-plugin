@@ -7,7 +7,6 @@ import de.tum.cit.ase.artemis_notification_plugin.exception.TestParsingException
 import de.tum.cit.ase.artemis_notification_plugin.model.Commit;
 import de.tum.cit.ase.artemis_notification_plugin.model.TestResults;
 import de.tum.cit.ase.artemis_notification_plugin.model.Testsuite;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
