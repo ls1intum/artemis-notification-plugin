@@ -64,6 +64,7 @@ public abstract class NotificationPlugin {
         results.setLogs(extractLogs(buildLogsFile));
 
         postResult(results, context);
+        LOGGER.info("Successfully posted test results to server");
     }
 
     /**
