@@ -86,8 +86,8 @@ public abstract class NotificationPlugin {
                     .returnResponse();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                throw new HttpException(String.format("Sending test results failed (%d) with response: %s",
-                        response.getStatusLine().getStatusCode(), IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset())));
+                throw new HttpException(String.format("Sending test results failed (%d)",
+                        response.getStatusLine().getStatusCode(), Charset.defaultCharset()));
             }
         }
         catch (HttpException | IOException e) {
