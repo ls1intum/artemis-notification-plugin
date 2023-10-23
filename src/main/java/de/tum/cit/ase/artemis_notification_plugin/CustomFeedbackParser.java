@@ -54,7 +54,8 @@ public class CustomFeedbackParser {
                     }
                     catch (IOException e) {
                         // TODO: taskListener.error(e.getMessage(), e);
-                        LOGGER.error(e.getMessage(), e);
+                        LOGGER.error("Error extracting custom feedback from file");
+                        LOGGER.debug(e.getMessage(), e);
                         return Optional.empty();
                     }
                 })

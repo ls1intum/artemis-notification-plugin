@@ -11,7 +11,7 @@ public class CLIPlugin extends NotificationPlugin {
 
     public CLIPlugin() {
         super(new EnvReader());
-        Configurator.setRootLevel(Level.ALL);
+        Configurator.setRootLevel(Level.INFO);
     }
 
     public static void main(String[] args) throws IOException {

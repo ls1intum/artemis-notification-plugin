@@ -91,7 +91,8 @@ public abstract class NotificationPlugin {
             }
         }
         catch (HttpException | IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Error posting results to server");
+            LOGGER.debug(e.getMessage(), e);
         }
     }
 
@@ -124,7 +125,8 @@ public abstract class NotificationPlugin {
             return testsuite.flatten();
         }
         catch (JAXBException | IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Error extracting test report from file");
+            LOGGER.debug(e.getMessage(), e);
             throw new TestParsingException(e);
         }
     }
