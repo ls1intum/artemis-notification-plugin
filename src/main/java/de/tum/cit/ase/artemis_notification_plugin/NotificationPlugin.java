@@ -3,6 +3,7 @@ package de.tum.cit.ase.artemis_notification_plugin;
 import com.google.gson.Gson;
 import de.tum.cit.ase.artemis_notification_plugin.configuration.Context;
 import de.tum.cit.ase.artemis_notification_plugin.configuration.ContextFactory;
+import de.tum.cit.ase.artemis_notification_plugin.exception.PostResultException;
 import de.tum.cit.ase.artemis_notification_plugin.exception.TestParsingException;
 import de.tum.cit.ase.artemis_notification_plugin.model.Commit;
 import de.tum.cit.ase.artemis_notification_plugin.model.TestResults;
@@ -93,6 +94,7 @@ public abstract class NotificationPlugin {
         catch (HttpException | IOException e) {
             LOGGER.error("Error posting results to server");
             LOGGER.debug(e.getMessage(), e);
+            throw new PostResultException(e);
         }
     }
 

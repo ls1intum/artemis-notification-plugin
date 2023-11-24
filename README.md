@@ -2,31 +2,30 @@
 
 Based on the [Jenkins Server Notification Plugin](https://github.com/ls1intum/jenkins-server-notification-plugin), this plugin can send a notification with the test results to the [Artemis](https://github.com/ls1intum/Artemis) server.
 
-In difference to the Jenkins and [Bamboo Server Notification Plugin](https://github.com/ls1intum/bamboo-server-notification-plugin), this tool does not depend on any particular Continuous Integration System (CIS), but can be used with any CIS.
-Therefore, no information can be fetched from the API of the CIS and all required configurations must be set as an environment variable.
+As part of the thesis [_Automatic Correction of Programming Exercises with Artemis & GitLab CI_](https://ase.cit.tum.de/theses/automatic-correction-of-programming-exercises-with-artemis-and-gitlab-ci/) this plugin was conceptualized and implemented.
+The main goal of this redevelopment of the server notification plugin is to make it more flexible by removing the dependency on a specific Continuous Integration System (CIS).
+Instead, the plugin aims to be used with any CIS, providing different adapters for getting the required build information from the specific CIS.
 
 ## System Design
 
 ![Class Diagram](docs/class-diagram.drawio.png "Class Diagram")
 
-This plugin contains the common feedback extraction and sending logic, which is used by all CIS plugins.
-All required configurations must be passed as a `Context` object.
+This plugin contains the common feedback extraction and sending logic used by all CIS plugins.
+The required configuration is passed as a `Context` object.
 
-Depending on the CIS, the `Context` object is created differently.
-Thus, we use the Strategy Pattern to bind dynamically a suitable `ContextFactory` for this CIS.
+Depending on the CIS, the plugin creates the `Context` object differently.
+Thus, we use the Strategy Pattern to dynamically bind a suitable `ContextFactory` for the CIS.
+For GitLab CI, environment variables are used to create the `Context` object.
 
-The implementation of the Jenkins and Bamboo part is not done yet.
+The implementation of the Jenkins and Bamboo part still needs to be done.
 
-## Which results will get published?
-The plugin will collect and merge **all** JUnit formatted test results in the _results_ directory in a build.\
-So, you have to copy or generate all JUnit XML files under this directory, the plugin will take care of merging
-multiple files and posting the results to the specified endpoint.
+## Which results will get sent?
+The plugin will collect and merge all JUnit formatted test results in the results directory during the execution.
+Please make sure to generate all JUnit XML files under this directory before. Then, the plugin will merge the files and post the results to the Artemis endpoint.
 
 The JUnit format is limited to allow messages only for failing test cases.
-To circumvent this limitation and allow custom tools to easily send additional feedbacks to Artemis another approach is possible.
-To achieve this, a directory _customFeedbacks_ has to be created.
-Then this plugin will read all JSON files written to this directory and integrate them into the report sent to Artemis.
-The JSON files must have the correct file ending `.json` and have to be in the format
+In order to circumvent this limitation, the plugin will additionally read all JSON files in the custom feedback directory and integrate them into the report sent to Artemis.
+The JSON files must have the correct file ending `.json` and have to be in the format:
 ```json
 {
   "name": "string",
@@ -34,21 +33,19 @@ The JSON files must have the correct file ending `.json` and have to be in the f
   "message": "string"
 }
 ```
-where the attributes are:
-* `name`: This is the name of the test case as it will be shown for example on the ‘Configure Grading’ page.
-  It should therefore have a for this exercise uniquely identifiable name and **has to be non-null**.
+with the attributes:
+* `name`: The name of the test case as it will be shown in Artemis. It has to be unique for this exercise and non-null.
 * `successful`: Indicates if the test case execution for this submission should be marked as successful or failed.
-* `message`: The message shown as additional information to the student.
-  **Required for non-successful feedback**, optional otherwise.
+* `message`: The message to be shown as additional information to the student. The attribute is required for non-successful feedback, and it is optional otherwise.
 
 ## Usage
-Before executing the application make sure that the following environment variables are set:
+Before executing the application via the command line interface (`CLIPlugin`), make sure that the following environment variables are set:
 * `ARTEMIS_TEST_RESULTS_DIR`: The directory where the JUnit XML files are located.
 * `ARTEMIS_CUSTOM_FEEDBACK_DIR`: The directory where the custom feedback JSON files are located.
 * `ARTEMIS_TEST_GIT_HASH`: The git hash of the commit of the test repository.
 * `ARTEMIS_TEST_GIT_REPOSITORY_SLUG`: The slug of the test repository.
 * `ARTEMIS_TEST_GIT_BRANCH`: The branch of the test repository.
-* `ARTEMIS_SUBMISSION_GIT_HASH`: The git hash of the commit of the submission repository (the student repositories, the template or the solution repository) that was tested.
+* `ARTEMIS_SUBMISSION_GIT_HASH`: The git hash of the commit of the submission repository (the student repositories, the template, or the solution repository) that was tested.
 * `ARTEMIS_SUBMISSION_GIT_REPOSITORY_SLUG`: The slug of the submission repository.
 * `ARTEMIS_SUBMISSION_GIT_BRANCH`: The branch of the submission repository.
 * `ARTEMIS_BUILD_PLAN_ID`: The id of the build plan. This is used to identify the participation.
@@ -60,4 +57,4 @@ Before executing the application make sure that the following environment variab
 
 To execute the application, run `gradle run`.
 The Docker image can be used to run the application in a container (e.g. in a CIS).
-**Information:** On startup of the container, the application is not automatically executed, since some CIS require a script to be executed. Thus, please use `gradle run` to execute it.
+**Information:** On startup of the container, the application is not automatically executed since some CIS require a script to be executed. Thus, please use `java -jar /notification-plugin/artemis-notification-plugin.jar` to execute it.

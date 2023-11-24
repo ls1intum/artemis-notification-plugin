@@ -1,5 +1,8 @@
 package de.tum.cit.ase.artemis_notification_plugin.model;
 
+import de.tum.cit.ase.artemis_notification_plugin.CLIPlugin;
+import de.tum.cit.ase.artemis_notification_plugin.configuration.Context;
+import de.tum.cit.ase.artemis_notification_plugin.exception.PostResultException;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -60,6 +63,12 @@ class TestsuiteTest {
         assertEquals(12, flattened.getTestCases().size());
         assertEquals(2, flattened.getFailures());
         assertEquals(1, flattened.getErrors());
+    }
+
+    @Test
+    void testPostResultFailure() {
+        CLIPlugin cliPlugin = new CLIPlugin();
+        assertThrows(PostResultException.class, () -> cliPlugin.postResult(new TestResults(), new Context(null, null, null, null, null, null, null, null, null, null, null, "http://invalid", "secret")));
     }
 
     private Testsuite loadTestSuite(final Path reportXml) throws JAXBException {
