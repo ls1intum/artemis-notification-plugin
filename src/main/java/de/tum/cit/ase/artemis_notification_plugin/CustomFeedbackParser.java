@@ -15,6 +15,9 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Parses the custom feedbacks from the results directory.
+ */
 public class CustomFeedbackParser {
 
     private static final Logger LOGGER = LogManager.getLogger(CustomFeedbackParser.class);
@@ -51,7 +54,8 @@ public class CustomFeedbackParser {
                     }
                     catch (IOException e) {
                         // TODO: taskListener.error(e.getMessage(), e);
-                        LOGGER.error(e.getMessage(), e);
+                        LOGGER.error("Error extracting custom feedback from file");
+                        LOGGER.debug(e.getMessage(), e);
                         return Optional.empty();
                     }
                 })

@@ -8,7 +8,6 @@ import de.tum.cit.ase.artemis_notification_plugin.exception.TestParsingException
 import de.tum.cit.ase.artemis_notification_plugin.model.Commit;
 import de.tum.cit.ase.artemis_notification_plugin.model.TestResults;
 import de.tum.cit.ase.artemis_notification_plugin.model.Testsuite;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.fluent.Request;
@@ -65,10 +64,12 @@ public abstract class NotificationPlugin {
         results.setLogs(extractLogs(buildLogsFile));
 
         postResult(results, context);
+        LOGGER.info("Successfully posted test results to server");
     }
 
     /**
      * Sends the test results to the Artemis server.
+     *
      * @param results the test results to send.
      * @param context the context containing the configuration.
      */
@@ -86,12 +87,13 @@ public abstract class NotificationPlugin {
                     .returnResponse();
 
             if (response.getStatusLine().getStatusCode() != 200) {
-                throw new HttpException(String.format("Sending test results failed (%d) with response: %s",
-                        response.getStatusLine().getStatusCode(), IOUtils.toString(response.getEntity().getContent(), Charset.defaultCharset())));
+                throw new HttpException(String.format("Sending test results failed (%d)",
+                        response.getStatusLine().getStatusCode(), Charset.defaultCharset()));
             }
         }
         catch (HttpException | IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Error posting results to server");
+            LOGGER.debug(e.getMessage(), e);
             throw new PostResultException(e);
         }
     }
@@ -125,7 +127,8 @@ public abstract class NotificationPlugin {
             return testsuite.flatten();
         }
         catch (JAXBException | IOException e) {
-            LOGGER.error(e.getMessage(), e);
+            LOGGER.error("Error extracting test report from file");
+            LOGGER.debug(e.getMessage(), e);
             throw new TestParsingException(e);
         }
     }
